@@ -380,18 +380,19 @@ a { text-decoration: none; }
 .pd-short-desc { font-size: 12.5px; line-height: 1.6; color: #3c3c43; }
 .pd-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
 .pd-qty-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.pd-qty-row .btn-wish { margin-left: auto; }
 .pd-qty-row .label { font-size: 12px; color: #3c3c43; font-weight: 600; }
 .qty-group { display: inline-flex; align-items: stretch; border: 1px solid #dee2e6; border-radius: 4px; overflow: hidden; height: 32px; }
 .qty-btn { width: 32px; background: #f8f9fa; border: none; cursor: pointer; font-size: 14px; color: #3c3c43; display: inline-flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s; }
 .qty-btn:hover:not(:disabled) { background: var(--unimate-primary); color: #fff; }
 .qty-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .qty-input { width: 40px; border: none; border-left: 1px solid #dee2e6; border-right: 1px solid #dee2e6; outline: none; text-align: center; font-size: 12.5px; font-weight: 600; color: #0a2540; }
-.pd-buttons { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 4px; }
-.btn-add-cart { grid-column: 1; grid-row: 1; background: #fff; color: var(--unimate-primary); border: 1.5px solid var(--unimate-primary); border-radius: 4px; padding: 8px 14px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; cursor: pointer; transition: background 0.2s, color 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-.btn-add-cart:hover { background: var(--unimate-primary); color: #fff; }
-.btn-buy-now { grid-column: 1; grid-row: 2; background: var(--unimate-primary); color: #fff; border: 1.5px solid var(--unimate-primary); border-radius: 4px; padding: 8px 14px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; cursor: pointer; transition: background 0.2s, color 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-.btn-buy-now:hover { background: #fff; color: var(--unimate-primary); }
-.btn-wish { grid-column: 2; grid-row: 1 / span 2; width: 36px; border: 1.5px solid #cfddf0; background: #eef4fb; color: var(--unimate-primary); border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; transition: background 0.2s, border-color 0.2s; }
+.pd-buttons { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 4px; }
+.btn-add-cart { grid-column: 1; grid-row: 1; background: #fff; color: var(--unimate-primary); border: 1.5px solid var(--unimate-primary); border-radius: 4px; padding: 8px 14px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.btn-add-cart:hover { background: #eef4fb; border-color: var(--unimate-primary-dark); color: var(--unimate-primary-dark); }
+.btn-buy-now { grid-column: 1; grid-row: 2; background: var(--unimate-primary); color: #fff; border: 1.5px solid var(--unimate-primary); border-radius: 4px; padding: 8px 14px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.btn-buy-now:hover { background: var(--unimate-primary-dark); border-color: var(--unimate-primary-dark); color: #fff; }
+.btn-wish { width: 36px; height: 36px; flex-shrink: 0; border: 1.5px solid #cfddf0; background: #eef4fb; color: var(--unimate-primary); border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; transition: background 0.2s, border-color 0.2s, color 0.2s; }
 .btn-wish:hover, .btn-wish.active { background: var(--unimate-primary); border-color: var(--unimate-primary); color: #fff; }
 .pd-share { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid #f1f3f5; font-size: 12.5px; color: #3c3c43; }
 .pd-share strong { font-weight: 700; }

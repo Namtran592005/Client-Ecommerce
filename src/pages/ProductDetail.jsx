@@ -165,6 +165,9 @@ export default function ProductDetail() {
                       onChange={(e) => setQty(Math.max(1, Number(e.target.value) || 1))} />
                     <button className="qty-btn" type="button" aria-label="Tăng" onClick={() => setQty(qty + 1)}>+</button>
                   </div>
+                  <button className="btn-wish" type="button" aria-label="Yêu thích" title="Thêm vào yêu thích" onClick={wish}>
+                    <i className="bi bi-heart" aria-hidden="true"></i>
+                  </button>
                 </div>
                 <div className="pd-buttons">
                   <button className="btn-add-cart" type="button" onClick={doAdd}>
@@ -172,9 +175,6 @@ export default function ProductDetail() {
                   </button>
                   <button className="btn-buy-now" type="button" onClick={buyNow}>
                     Mua ngay
-                  </button>
-                  <button className="btn-wish" type="button" aria-label="Yêu thích" onClick={wish}>
-                    <i className="bi bi-heart"></i>
                   </button>
                 </div>
               </div>
