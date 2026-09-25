@@ -89,12 +89,6 @@ export function Header({ cats }) {  const { user, logout } = useAuth();
     document.body.style.overflow = (drawer || searchBox) ? 'hidden' : '';
   }, [drawer, searchBox]);
   useEffect(() => {
-    const wide = window.matchMedia('(min-width: 1366px)');
-    const onChange = (e) => { if (e.matches) setDrawer(false); };
-    wide.addEventListener('change', onChange);
-    return () => wide.removeEventListener('change', onChange);
-  }, []);
-  useEffect(() => {
     const esc = (e) => { if (e.key === 'Escape') { setDrawer(false); setSearchBox(false); } };
     document.addEventListener('keydown', esc);
     return () => document.removeEventListener('keydown', esc);
@@ -115,15 +109,6 @@ export function Header({ cats }) {  const { user, logout } = useAuth();
               <span className="line"></span><span className="line"></span><span className="line"></span>
             </button>
             <Link to="/" className="logo"><img src="/logo/logo-dark.png" alt="UniMate" /></Link>
-            <nav className="nav-desktop">
-              {(shopMenu || [
-                { label: 'Hàng Mới', link: '/san-pham' },
-                { label: 'Bán Chạy', link: '/san-pham?sap-xep=gia-giam' },
-                ...(catsFull[0]?.children || []).slice(0, 3).map((c) => ({ label: c.name, link: `/san-pham?danh-muc=${c.id}` })),
-              ]).slice(0, 5).map((m, i) => (
-                <MenuLink key={i} to={m.link} title={m.label}>{m.label}</MenuLink>
-              ))}
-            </nav>
             <div className="header-right">
               <form className="search-desktop" onSubmit={(e) => { e.preventDefault(); nav(q.trim() ? `/tim-kiem?q=${encodeURIComponent(q.trim())}` : '/san-pham'); }}>
                 <i className="bi bi-search"></i>
