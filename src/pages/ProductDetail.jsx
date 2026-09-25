@@ -43,13 +43,29 @@ export default function ProductDetail() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const doAdd = async (buyNow = false) => {
+  const doAdd = async () => {
     if (!variant) return toast.warning('Sản phẩm chưa có biến thể để bán');
     try {
       await add(variant.id, qty);
-      if (buyNow) nav('/gio-hang');
-      else toast.success('Đã thêm vào giỏ hàng');
+      toast.success('Đã thêm vào giỏ hàng');
     } catch (e) { toast.error(errMsg(e)); }
+  };
+
+  const buyNow = () => {
+    if (!variant) return toast.warning('Sản phẩm chưa có biến thể để bán');
+    nav('/thanh-toan', {
+      state: {
+        buyNow: {
+          variant_id: variant.id,
+          quantity: qty,
+          product_name: p.name,
+          variant_name: variant.name || '',
+          sku: variant.sku,
+          price: variant.price,
+          image_key: imgs[0] || null,
+        },
+      },
+    });
   };
 
   const wish = async () => {
@@ -151,8 +167,11 @@ export default function ProductDetail() {
                   </div>
                 </div>
                 <div className="pd-buttons">
-                  <button className="btn-add-cart" type="button" onClick={() => doAdd(false)}>
+                  <button className="btn-add-cart" type="button" onClick={doAdd}>
                     <i className="bi bi-cart-plus"></i> Thêm vào giỏ
+                  </button>
+                  <button className="btn-buy-now" type="button" onClick={buyNow}>
+                    <i className="bi bi-lightning-charge-fill"></i> Mua ngay
                   </button>
                   <button className="btn-wish" type="button" aria-label="Yêu thích" onClick={wish}>
                     <i className="bi bi-heart"></i>

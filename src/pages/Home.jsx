@@ -53,7 +53,7 @@ export default function Home() {
   }
 
   return (
-    <>
+    <div className="page-home">
       <div className="banner-wrap">
         <HeroSlider slides={banners} />
       </div>
@@ -102,6 +102,6 @@ export default function Home() {
           <ProductSlider items={best} />
         </div>
       </section>
-    </>
+    </div>
   );
 }

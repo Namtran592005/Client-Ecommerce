@@ -26,7 +26,12 @@ export default function Checkout() {
   const [shipCode, setShipCode] = useState('');
   const [note, setNote] = useState('');
   const [placing, setPlacing] = useState(false);
+  const [buyNow, setBuyNow] = useState(loc.state?.buyNow || null);
   const coupon = loc.state?.coupon || '';
+
+  useEffect(() => {
+    if (!loc.state?.buyNow) setBuyNow(null);
+  }, [loc.state]);
 
   useEffect(() => {
     api.get('/payments/methods').then((r) => setPayMethods(r.data)).catch(() => {});
@@ -40,7 +45,12 @@ export default function Checkout() {
     }
   }, [user]);
 
-  if (!cart.items.length) {
+  const items = buyNow
+    ? [{ id: `buynow-${buyNow.variant_id}`, ...buyNow }]
+    : cart.items;
+  const subtotal = items.reduce((sum, i) => sum + Number(i.price) * i.quantity, 0);
+
+  if (!items.length) {
     return (
       <main className="category-page"><div className="category-container text-center py-5">
         Giỏ trống — <Link to="/san-pham" style={{ color: 'var(--unimate-primary)' }}>mua sắm ngay</Link>
@@ -49,7 +59,7 @@ export default function Checkout() {
   }
 
   const shipFee = shipMethods.find((m) => m.code === shipCode)?.base_fee ?? 30000;
-  const total = cart.subtotal + shipFee;
+  const total = subtotal + shipFee;
 
   const submit = async () => {
     if (!addr.recipient_name || !addr.phone || !addr.province_name || !addr.address_line) {
@@ -59,12 +69,13 @@ export default function Checkout() {
     setPlacing(true);
     try {
       const { data } = await api.post('/orders/checkout', {
-        items: cart.items.map((i) => ({ variant_id: i.variant_id, quantity: i.quantity })),
+        items: items.map((i) => ({ variant_id: i.variant_id, quantity: i.quantity })),
         shipping_address: addr, coupon_code: coupon || undefined,
         payment_method_code: payCode, shipping_method_code: shipCode || undefined, customer_note: note,
       });
-      await clear();
-      nav(`/dat-hang-thanh-cong/${data.id}`, { state: { order_number: data.order_number, total: data.total_amount } });
+      if (!buyNow) await clear();
+      setBuyNow(null);
+      nav(`/dat-hang-thanh-cong/${data.id}`, { replace: true, state: { order_number: data.order_number, total: data.total_amount } });
     } catch (e) {
       toast.error(e?.response?.data?.error || 'Đặt hàng thất bại');
     } finally { setPlacing(false); }
@@ -123,14 +134,17 @@ export default function Checkout() {
           </div>
           <div className="col-lg-5">
             <div className="summary-box" style={{ position: 'sticky', top: 150 }}>
-              <h6 style={{ fontWeight: 700 }}>Đơn hàng ({cart.items.length})</h6>
-              {cart.items.map((i) => (
+              <h6 style={{ fontWeight: 700 }}>Đơn hàng ({items.length})</h6>
+              {buyNow && (
+                <p className="mini-note" style={{ color: '#b45309' }}>Mua ngay — sản phẩm này không được thêm vào giỏ.</p>
+              )}
+              {items.map((i) => (
                 <div key={i.id} className="d-flex justify-content-between py-1 border-bottom" style={{ fontSize: 13 }}>
-                  <span>{i.product_name} × {i.quantity}</span>
+                  <span>{i.product_name}{i.variant_name ? ` (${i.variant_name})` : ''} × {i.quantity}</span>
                   <b>{fmtVND(i.price * i.quantity).replace('₫', '')}VND</b>
                 </div>
               ))}
-              <div className="summary-row"><span>Tạm tính</span><b>{fmtVND(cart.subtotal).replace('₫', '')}VND</b></div>
+              <div className="summary-row"><span>Tạm tính</span><b>{fmtVND(subtotal).replace('₫', '')}VND</b></div>
               <div className="summary-row"><span>Phí ship</span><b>{fmtVND(shipFee).replace('₫', '')}VND</b></div>
               {coupon && <div className="summary-row" style={{ color: '#34A853' }}><span>Mã {coupon}</span><span>tính lúc chốt đơn</span></div>}
               <div className="summary-total"><span>Tổng</span><span className="amount">{fmtVND(total).replace('₫', '')}VND</span></div>

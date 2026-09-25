@@ -98,7 +98,8 @@ export function Header({ cats }) {  const { user, logout } = useAuth();
     <header>
       <div className="top-bar">
         <div className="container text-center">
-          Miễn phí vận chuyển cho mọi đơn hàng từ <strong>499.000 VNĐ</strong> - Hotline 1900 255 579
+          <span className="d-sm-none">Miễn phí vận chuyển từ <strong>499.000₫</strong> · Hotline 1900 255 579</span>
+          <span className="d-none d-sm-inline">Miễn phí vận chuyển cho mọi đơn hàng từ <strong>499.000 VNĐ</strong> - Hotline 1900 255 579</span>
         </div>
       </div>
 
@@ -144,14 +145,9 @@ export function Header({ cats }) {  const { user, logout } = useAuth();
       <div className={`drawer-overlay ${drawer ? 'active' : ''}`} onClick={() => setDrawer(false)}></div>
       <aside className={`drawer ${drawer ? 'active' : ''}`} aria-hidden={!drawer}>
         <div className="drawer-header">
-          <span className="drawer-title">MENU</span>
-          <button className="drawer-close" type="button" onClick={() => setDrawer(false)} aria-label="Đóng menu">×</button>
+          <button className="drawer-close" type="button" onClick={() => setDrawer(false)} aria-label="Đóng menu"><i className="bi bi-x-lg" aria-hidden="true"></i></button>
         </div>
         <div className="drawer-body">
-          <form className="drawer-search" onSubmit={(e) => { e.preventDefault(); setDrawer(false); nav(q.trim() ? `/tim-kiem?q=${encodeURIComponent(q.trim())}` : '/san-pham'); }}>
-            <input type="text" placeholder="Tìm kiếm sản phẩm..." value={q} onChange={(e) => setQ(e.target.value)} />
-            <button type="submit" aria-label="Tìm"><i className="bi bi-search"></i></button>
-          </form>
           <ul className="drawer-menu">
             {(shopMenu || [
               { label: 'Hàng Mới', link: '/san-pham' },
