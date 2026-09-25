@@ -89,6 +89,12 @@ export function Header({ cats }) {  const { user, logout } = useAuth();
     document.body.style.overflow = (drawer || searchBox) ? 'hidden' : '';
   }, [drawer, searchBox]);
   useEffect(() => {
+    const wide = window.matchMedia('(min-width: 1366px)');
+    const onChange = (e) => { if (e.matches) setDrawer(false); };
+    wide.addEventListener('change', onChange);
+    return () => wide.removeEventListener('change', onChange);
+  }, []);
+  useEffect(() => {
     const esc = (e) => { if (e.key === 'Escape') { setDrawer(false); setSearchBox(false); } };
     document.addEventListener('keydown', esc);
     return () => document.removeEventListener('keydown', esc);
