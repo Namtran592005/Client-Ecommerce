@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Carousel } from 'bootstrap';
 import { api } from '../api/client';
 import { ProductCardHome } from '../components/Shop';
 import { useSlider } from '../components/Layout';
@@ -26,6 +27,9 @@ export default function Home() {
   const [best, setBest] = useState([]);
   const [cats, setCats] = useState([]);
   const [banners, setBanners] = useState([]);
+  const [active, setActive] = useState(0);
+  const carRef = useRef(null);
+  const carInst = useRef(null);
   const qc = useSlider();
 
   useEffect(() => {
@@ -54,39 +58,70 @@ export default function Home() {
     if (u.startsWith('/')) return u;
     return '/san-pham';
   };
-  const slides = banners.length ? banners : [{ id: 'ph1' }, { id: 'ph2' }];
+  const slides = banners.length ? banners : [];
+
+  useEffect(() => {
+    const el = carRef.current;
+    if (!el || slides.length < 2) return undefined;
+    const inst = new Carousel(el, { interval: 5500, ride: 'carousel', touch: true, wrap: true, pause: false });
+    carInst.current = inst;
+    const onSlid = (e) => {
+      const items = [...el.querySelectorAll('.carousel-item')];
+      setActive(Math.max(0, items.indexOf(e.target)));
+    };
+    el.addEventListener('slid.bs.carousel', onSlid);
+    return () => {
+      el.removeEventListener('slid.bs.carousel', onSlid);
+      inst.dispose();
+      carInst.current = null;
+    };
+  }, [slides.length]);
 
   return (
     <>
       <section className="banner-slider">
-        <div id="heroCarousel" className="carousel slide" data-bs-ride="carousel">
+        <div className="carousel slide" ref={carRef} key={slides.map((s) => s.id).join('-')}>
           <div className="carousel-indicators">
             {slides.map((s, i) => (
-              <button key={i} type="button" data-bs-target="#heroCarousel" data-bs-slide-to={i} className={i === 0 ? 'active' : ''}></button>
+              <button
+                key={s.id || i}
+                type="button"
+                className={i === active ? 'active' : ''}
+                aria-label={`Ảnh ${i + 1}`}
+                onClick={() => carInst.current?.to(i)}
+              ></button>
             ))}
           </div>
           <div className="carousel-inner">
             {slides.map((s, i) => {
               const to = bannerLink(s);
               const inner = s.url
-                ? <img src={s.url} alt={s.title || ''} />
+                ? <img src={s.url} alt={s.alt_text || s.title || ''} loading={i === 0 ? 'eager' : 'lazy'} />
                 : <span className="d-flex align-items-center justify-content-center w-100 text-white fw-bold"
                     style={{ aspectRatio: '1352/480', background: 'linear-gradient(120deg,#0b3d9e,#2f7fd0)', fontSize: 28 }}>
                     {s.title || 'UniMate'}
                   </span>;
               return (
-                <div className={`carousel-item ${i === 0 ? 'active' : ''}`} key={s.id || i}>
-                  {to.startsWith('http') ? <a href={to}>{inner}</a> : <Link to={to}>{inner}</Link>}
+                <div className={`carousel-item ${i === active ? 'active' : ''}`} key={s.id || i}>
+                  {to.startsWith('http')
+                    ? <a className="d-block" href={to} target="_blank" rel="noreferrer">{inner}</a>
+                    : <Link className="d-block" to={to}>{inner}</Link>}
                 </div>
               );
             })}
           </div>
-          <button className="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-            <span className="carousel-control-prev-icon"></span>
-          </button>
-          <button className="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-            <span className="carousel-control-next-icon"></span>
-          </button>
+          {slides.length > 1 && (
+            <>
+              <button className="carousel-control-prev" type="button" aria-label="Ảnh trước"
+                onClick={() => carInst.current?.prev()}>
+                <span className="carousel-control-prev-icon"></span>
+              </button>
+              <button className="carousel-control-next" type="button" aria-label="Ảnh sau"
+                onClick={() => carInst.current?.next()}>
+                <span className="carousel-control-next-icon"></span>
+              </button>
+            </>
+          )}
         </div>
       </section>
 
