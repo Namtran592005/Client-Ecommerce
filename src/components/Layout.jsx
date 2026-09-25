@@ -114,13 +114,6 @@ export function Header({ cats }) {  const { user, logout } = useAuth();
                 <i className="bi bi-search"></i>
                 <input type="text" placeholder="Bạn đang muốn tìm kiếm gì?" value={q} onChange={(e) => setQ(e.target.value)} />
               </form>
-              {user ? (
-                <Link to="/tai-khoan" className="header-icon" aria-label="Tài khoản" title={user.email || user.phone}>
-                  <i className="bi bi-person-check"></i>
-                </Link>
-              ) : (
-                <Link to="/dang-nhap" className="header-icon" aria-label="Đăng nhập"><i className="bi bi-person"></i></Link>
-              )}
               <Link to="/gio-hang" className="header-icon" aria-label="Giỏ hàng">
                 <i className="bi bi-cart3"></i>
                 <span className="cart-count">{count}</span>
