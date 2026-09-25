@@ -46,25 +46,31 @@ export default function Home() {
     }).catch(() => {});
   }, []);
 
+  const allCats = [];
+  for (const root of cats) {
+    allCats.push({ ...root, depth: 0 });
+    for (const child of root.children || []) allCats.push({ ...child, depth: 1 });
+  }
+
   return (
     <>
       <div className="banner-wrap">
         <HeroSlider slides={banners} />
       </div>
 
-      <section className="mt-4 mt-md-5">
+      <section className="cat-strip-section">
         <div className="section-wrap">
           <div className="slider-wrap" data-slider>
             <button className={`slider-arrow qc-arrow prev ${!qc.canPrev ? 'hidden' : ''}`} type="button" aria-label="Trước" onClick={qc.prev}>
               <i className="bi bi-chevron-left"></i>
             </button>
             <div className="quick-catalog-track" ref={qc.trackRef}>
-              {cats.map((c) => (
-                <Link key={c.id} to={`/san-pham?danh-muc=${c.id}`} className="qc-item">
-                  <div className="qc-thumb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eef4fb' }}>
+              {allCats.map((c) => (
+                <Link key={c.id} to={`/san-pham?danh-muc=${c.id}`} className={`qc-item${c.depth ? ' is-child' : ''}`}>
+                  <div className="qc-thumb">
                     {c.icon
-                      ? <i className={`bi ${c.icon}`} style={{ fontSize: 34, color: 'var(--unimate-primary)' }}></i>
-                      : <span className="text-white fw-bold" style={{ fontSize: 28 }}>{c.name[0]}</span>}
+                      ? <i className={`bi ${c.icon}`}></i>
+                      : <span className="qc-initial">{c.name[0]}</span>}
                   </div>
                   <span className="qc-label">{c.name}</span>
                 </Link>

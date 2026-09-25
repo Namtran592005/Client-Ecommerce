@@ -171,18 +171,25 @@ a { text-decoration: none; }
 .slider-arrow.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
 /* ===== QUICK CATALOG ===== */
-.quick-catalog-track { display: flex; gap: 10px; overflow-x: auto; padding: 0 20px 12px; scrollbar-width: none; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
+.quick-catalog-track { display: flex; gap: 8px; overflow-x: auto; padding: 0 20px 10px; scrollbar-width: none; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
 .quick-catalog-track::-webkit-scrollbar { display: none; }
-@media (min-width: 768px) { .quick-catalog-track { padding: 0 0 12px; gap: 16px; } }
-.qc-item { flex: 0 0 72px; display: block; text-decoration: none; color: inherit; text-align: center; }
-@media (min-width: 576px) { .qc-item { flex-basis: 88px; } }
-@media (min-width: 768px) { .qc-item { flex-basis: 104px; } }
-@media (min-width: 992px) { .qc-item { flex: 0 0 calc((100% - 7 * 16px) / 8); } }
-.qc-item .qc-thumb { width: 100%; aspect-ratio: 1 / 1; background: #e9ecef; border-radius: 6px; overflow: hidden; transition: transform 0.25s ease; }
-.qc-item:hover .qc-thumb { transform: translateY(-2px); }
+@media (min-width: 768px) { .quick-catalog-track { padding: 0 0 10px; gap: 12px; } }
+.qc-item { flex: 0 0 58px; display: block; text-decoration: none; color: inherit; text-align: center; }
+@media (min-width: 576px) { .qc-item { flex-basis: 68px; } }
+@media (min-width: 768px) { .qc-item { flex-basis: 80px; } }
+@media (min-width: 1200px) { .qc-item { flex-basis: 92px; } }
+.qc-item .qc-thumb { width: 100%; aspect-ratio: 1 / 1; background: #eef4fb; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: transform 0.25s ease, background-color 0.25s ease; }
+.qc-item:hover .qc-thumb { transform: translateY(-2px); background: #e2ecfa; }
+.qc-item .qc-thumb i { font-size: 22px; color: var(--unimate-primary); }
+.qc-item .qc-thumb .qc-initial { font-size: 20px; font-weight: 700; color: var(--unimate-primary); }
 .qc-item .qc-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.qc-item .qc-label { display: block; margin-top: 6px; font-size: 12px; font-weight: 600; color: var(--unimate-gray-800); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 32px; }
-@media (min-width: 768px) { .qc-item .qc-label { font-size: 13px; margin-top: 8px; min-height: 34px; } }
+.qc-item .qc-label { display: block; margin-top: 5px; font-size: 11px; font-weight: 600; color: var(--unimate-gray-800); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 28px; }
+@media (min-width: 768px) { .qc-item .qc-label { font-size: 12px; margin-top: 6px; min-height: 30px; } }
+.qc-item.is-child .qc-label { font-weight: 500; color: var(--unimate-gray-600, #6c757d); }
+.qc-item.is-child .qc-thumb { background: #f4f7fb; }
+.qc-item.is-child .qc-thumb i { font-size: 18px; color: #4a6fa5; }
+.cat-strip-section { margin-top: 20px; }
+@media (min-width: 768px) { .cat-strip-section { margin-top: 28px; } }
 .qc-arrow { top: 35%; }
 
 /* ===== PRODUCT SLIDER (trang chủ) ===== */
@@ -485,4 +492,21 @@ a { text-decoration: none; }
   .logo img { height: 34px; }
   .header-icon { font-size: 18px; width: 34px; height: 34px; }
   .hamburger { width: 22px; height: 18px; }
+}
+
+/* ===== GÓC VUÔNG TOÀN BỘ GIAO DIỆN =====
+   Đặt cuối file để thắng mọi rule bo góc của Bootstrap và rule trong file này. */
+:root {
+  --bs-border-radius: 0;
+  --bs-border-radius-sm: 0;
+  --bs-border-radius-lg: 0;
+  --bs-border-radius-xl: 0;
+  --bs-border-radius-2xl: 0;
+  --bs-border-radius-pill: 0;
+}
+
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
 }
