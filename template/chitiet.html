@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniMate - Ly Súc Miệng Bằng Sứ</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --unimate-primary: #80001c;
+      --unimate-gray-800: #3c3c43;
+      --unimate-gray-100: #f2f2f2;
+      --unimate-beige: #e0ceaa;
+      --unimate-beige-light: #f5efe4;
+    }
+    * { box-sizing: border-box; }
+    body {
+      background: #fff;
+      font-family: "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #333;
+      font-size: 13.5px;
+    }
+
+    /* Scrollbar tối giản */
+    * { scrollbar-width: thin; scrollbar-color: #ced4da transparent; }
+    *::-webkit-scrollbar { width: 3px; height: 3px; }
+    *::-webkit-scrollbar-track { background: transparent; }
+    *::-webkit-scrollbar-thumb { background: #dee2e6; border-radius: 3px; }
+    *::-webkit-scrollbar-thumb:hover { background: #adb5bd; }
+
+    /* ===== BREADCRUMB ===== */
+    .pd-breadcrumb-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 14px 20px 0;
+    }
+    @media (min-width: 992px) { .pd-breadcrumb-wrap { padding: 16px 32px 0; } }
+
+    .pd-breadcrumb {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #868e96;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .pd-breadcrumb li { display: inline-flex; align-items: center; gap: 6px; }
+    .pd-breadcrumb a {
+      color: #868e96;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .pd-breadcrumb a:hover { color: #80001c; }
+    .pd-breadcrumb .sep { color: #ced4da; font-size: 10px; display: inline-flex; }
+    .pd-breadcrumb .current { color: #80001c; font-weight: 700; }
+
+    /* ===== MAIN LAYOUT ===== */
+    .pd-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 20px 50px;
+    }
+    @media (min-width: 992px) { .pd-container { padding: 20px 32px 60px; } }
+
+    /* ===== GALLERY ===== */
+    .pd-gallery { position: relative; }
+    .pd-gallery-main {
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 1 / 1;
+      background: #e9ecef;
+      border-radius: 5px;
+      overflow: hidden;
+      position: relative;
+      margin: 0 auto;
+    }
+    .pd-gallery-main img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .pd-gallery-main:hover img { transform: scale(1.03); }
+    .pd-label {
+      position: absolute;
+      top: 0; left: 0;
+      background: #80001c;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      letter-spacing: 0.4px;
+      z-index: 2;
+    }
+
+    /* Thumbnails */
+    .pd-thumbs {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .pd-thumbs::-webkit-scrollbar { height: 3px; }
+    .pd-thumb {
+      flex: 0 0 auto;
+      width: 52px;
+      height: 52px;
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      background: #e9ecef;
+      transition: border-color 0.2s;
+    }
+    .pd-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pd-thumb:hover,
+    .pd-thumb.active { border-color: #80001c; }
+    @media (min-width: 992px) {
+      .pd-thumb { width: 58px; height: 58px; }
+    }
+
+    /* ===== INFO BLOCK ===== */
+    .pd-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .pd-name {
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.35;
+      color: #0a2540;
+      margin: 0;
+    }
+    @media (min-width: 992px) {
+      .pd-name { font-size: 20px; }
+    }
+
+    .pd-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      font-size: 11.5px;
+      color: #6c757d;
+    }
+    .pd-meta .sku strong { color: #0a2540; }
+    .pd-meta .stock {
+      color: #34A853;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 10.5px;
+    }
+    .pd-meta .stock.out { color: #dc3545; }
+
+    /* Price */
+    .pd-price-block {
+      padding: 10px 0 6px;
+      border-top: 1px solid #f1f3f5;
+      border-bottom: 1px solid #f1f3f5;
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .pd-price {
+      color: #80001c;
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 1;
+    }
+    .pd-price small { font-size: 11.5px; font-weight: 400; margin-left: 2px; }
+    .pd-price-old {
+      color: #adb5bd;
+      font-size: 13px;
+      text-decoration: line-through;
+      font-weight: 400;
+    }
+
+    /* Short description */
+    .pd-short-desc {
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: #3c3c43;
+    }
+
+    /* Quantity + actions */
+    .pd-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .pd-qty-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .pd-qty-row .label { font-size: 12px; color: #3c3c43; font-weight: 600; }
+    .qty-group {
+      display: inline-flex;
+      align-items: stretch;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      overflow: hidden;
+      height: 32px;
+    }
+    .qty-btn {
+      width: 32px;
+      background: #f8f9fa;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      color: #3c3c43;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+    .qty-btn:hover:not(:disabled) { background: #80001c; color: #fff; }
+    .qty-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .qty-input {
+      width: 40px;
+      border: none;
+      border-left: 1px solid #dee2e6;
+      border-right: 1px solid #dee2e6;
+      outline: none;
+      text-align: center;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #0a2540;
+    }
+
+    /* Nút add to cart + wishlist (nhỏ lại) */
+    .pd-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .btn-add-cart {
+      flex: 1;
+      background: #80001c;
+      color: #fff;
+      border: 1.5px solid #80001c;
+      border-radius: 4px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-add-cart:hover { background: #fff; color: #80001c; }
+    .btn-wish {
+      width: 36px;
+      border: 1.5px solid #e0ceaa;
+      background: #f5efe4;
+      color: #80001c;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 15px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .btn-wish:hover {
+      background: #80001c;
+      border-color: #80001c;
+      color: #fff;
+    }
+
+    /* Share */
+    .pd-share {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid #f1f3f5;
+      font-size: 12.5px;
+      color: #3c3c43;
+    }
+    .pd-share strong { font-weight: 700; }
+    .pd-share .share-icons { display: flex; gap: 8px; }
+    .pd-share .share-icons button {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 13px;
+      transition: transform 0.15s;
+    }
+    .pd-share .share-icons button:hover { transform: scale(1.08); }
+    .pd-share .share-icons .fb { background: #1877f2; }
+    .pd-share .share-icons .zalo { background: #0a7cff; }
+
+    /* ===== TABS ===== */
+    .pd-tabs {
+      margin-top: 36px;
+      border-top: 1px solid #f1f3f5;
+    }
+    .pd-tab-head {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      border-bottom: 1px solid #f1f3f5;
+      overflow-x: auto;
+    }
+    .pd-tab-head::-webkit-scrollbar { display: none; }
+    .pd-tab-btn {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      padding: 13px 16px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #6c757d;
+      cursor: pointer;
+      position: relative;
+      white-space: nowrap;
+      transition: color 0.15s;
+    }
+    .pd-tab-btn:hover { color: #80001c; }
+    .pd-tab-btn.active { color: #80001c; }
+    .pd-tab-btn.active::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: -1px;
+      height: 2px;
+      background: #80001c;
+    }
+    .pd-tab-panel {
+      display: none;
+      padding: 22px 4px;
+      max-width: 720px;
+      margin: 0 auto;
+      animation: fadeIn 0.25s ease;
+    }
+    .pd-tab-panel.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .pd-desc {
+      font-size: 13px;
+      line-height: 1.7;
+      color: #3c3c43;
+    }
+    .pd-desc p { margin-bottom: 10px; }
+    .pd-desc strong { color: #0a2540; }
+
+    .pd-spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+    .pd-spec-table tr { border-bottom: 1px solid #f1f3f5; }
+    .pd-spec-table td { padding: 11px 8px; vertical-align: top; }
+    .pd-spec-table td:first-child {
+      width: 32%;
+      font-weight: 700;
+      color: #0a2540;
+    }
+    .pd-spec-table td:last-child { color: #3c3c43; }
+
+    /* ===== RELATED PRODUCTS (đồng bộ với trang Sản phẩm) ===== */
+    .pd-related { margin-top: 44px; }
+    .pd-related-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #0a2540;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    /* Grid responsive giống trang Sản phẩm: 2 → 3 → 4 cột */
+    .pd-related-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      row-gap: 20px;
+    }
+    @media (min-width: 576px) {
+      .pd-related-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; row-gap: 22px; }
+    }
+    @media (min-width: 992px) {
+      .pd-related-grid { grid-template-columns: repeat(4, 1fr); gap: 12px; row-gap: 22px; }
+    }
+    @media (min-width: 1200px) {
+      .pd-related-grid { gap: 14px; row-gap: 24px; }
+    }
+
+    /* Product card — copy CHÍNH XÁC từ trang Sản phẩm */
+    .product-card-cat {
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      text-decoration: none;
+      color: inherit;
+    }
+    .product-card-cat .thumb {
+      position: relative;
+      background: #e9ecef;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      border-radius: 3px;
+    }
+    .product-card-cat .thumb img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.35s ease;
+    }
+    .product-card-cat:hover .thumb img { transform: scale(1.04); }
+    .product-card-cat .label-new {
+      position: absolute; top: 0; left: 0;
+      background: #80001c; color: #fff;
+      font-size: 9px; font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 6px; z-index: 2;
+      letter-spacing: 0.3px;
+    }
+    .product-card-cat .label-discount {
+      position: absolute; top: 0; left: 0;
+      background: #dc3545; color: #fff;
+      font-size: 9px; font-weight: 700;
+      padding: 2px 6px; z-index: 2;
+      letter-spacing: 0.3px;
+    }
+    .product-card-cat .wishlist-btn {
+      position: absolute;
+      top: 6px; right: 6px;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: #fff;
+      border: 1px solid #e9ecef;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #adb5bd;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+      z-index: 2;
+      font-size: 12px;
+    }
+    .product-card-cat .wishlist-btn:hover { color: #80001c; border-color: #80001c; }
+
+    .product-card-cat .info {
+      padding: 8px 2px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex: 1;
+    }
+    .product-card-cat .p-name {
+      font-size: 11.5px;
+      line-height: 1.35;
+      color: #3c3c43;
+      text-decoration: none;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 31px;
+    }
+    .product-card-cat:hover .p-name { color: #80001c; }
+    .product-card-cat .p-price {
+      color: #80001c;
+      font-weight: 700;
+      font-size: 12.5px;
+      margin-top: auto;
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 4px;
+      line-height: 1.3;
+    }
+    .product-card-cat .p-price small {
+      font-size: 9.5px;
+      font-weight: 400;
+      margin-left: 1px;
+    }
+    .product-card-cat .p-price-old {
+      color: #adb5bd;
+      font-size: 10.5px;
+      text-decoration: line-through;
+      font-weight: 400;
+    }
+    .product-card-cat .p-buy {
+      display: block;
+      text-align: center;
+      border: 1px solid #ced4da;
+      color: #3c3c43;
+      background: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 0;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+      border-radius: 3px;
+      margin-top: 4px;
+    }
+    .product-card-cat .p-buy:hover {
+      background: #80001c;
+      color: #fff;
+      border-color: #80001c;
+    }
+
+    /* ===== STICKY BOTTOM (mobile) ===== */
+    .pd-sticky-mobile {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #fff;
+      border-top: 1px solid #e9ecef;
+      padding: 8px 12px;
+      z-index: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06);
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+    .pd-sticky-mobile.show { transform: translateY(0); }
+    @media (min-width: 992px) { .pd-sticky-mobile { display: none; } }
+    .pd-sticky-mobile .price-mini {
+      color: #80001c;
+      font-weight: 700;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    .pd-sticky-mobile .price-mini small {
+      font-size: 10px;
+      font-weight: 400;
+      margin-left: 1px;
+    }
+    .pd-sticky-mobile .btn-add-cart-mini {
+      flex: 1;
+      background: #80001c;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 9px 0;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER — copy từ trang chủ -->
+
+
+  <main class="product-detail-page">
+
+    <!-- Breadcrumb -->
+    <div class="pd-breadcrumb-wrap">
+      <nav aria-label="breadcrumb">
+        <ol class="pd-breadcrumb">
+          <li>
+            <a href="#">Trang chủ</a>
+            <span class="sep"><i class="bi bi-chevron-right"></i></span>
+          </li>
+          <li>
+            <a href="#">Sản phẩm</a>
+            <span class="sep"><i class="bi bi-chevron-right"></i></span>
+          </li>
+          <li>
+            <a href="#">Ly &amp; Cốc</a>
+            <span class="sep"><i class="bi bi-chevron-right"></i></span>
+          </li>
+          <li>
+            <span class="current">Ly Súc Miệng Bằng Sứ</span>
+          </li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- Product top -->
+    <div class="pd-container">
+      <div class="row g-3 g-lg-4 justify-content-center">
+
+        <!-- Gallery -->
+        <div class="col-lg-6">
+          <div class="pd-gallery">
+            <div class="pd-gallery-main">
+              <span class="pd-label">Mới</span>
+              <img
+                id="pdMainImage"
+                src="https://placehold.co/800/e9ecef/6c757d?text=Ly+S%C3%BAc+Mi%E1%BB%87ng"
+                alt="Ly Súc Miệng Bằng Sứ"
+                onerror="this.style.visibility='hidden'"
+              >
+            </div>
+
+            <div class="pd-thumbs">
+              <div class="pd-thumb active" data-img="https://placehold.co/800/e9ecef/6c757d?text=Ly+S%C3%BAc+Mi%E1%BB%87ng">
+                <img src="https://placehold.co/160/e9ecef/6c757d?text=1" alt="" onerror="this.style.visibility='hidden'">
+              </div>
+              <div class="pd-thumb" data-img="https://placehold.co/800/dbe4ec/6c757d?text=View+2">
+                <img src="https://placehold.co/160/dbe4ec/6c757d?text=2" alt="" onerror="this.style.visibility='hidden'">
+              </div>
+              <div class="pd-thumb" data-img="https://placehold.co/800/dfe8d5/6c757d?text=View+3">
+                <img src="https://placehold.co/160/dfe8d5/6c757d?text=3" alt="" onerror="this.style.visibility='hidden'">
+              </div>
+              <div class="pd-thumb" data-img="https://placehold.co/800/f0e6d6/6c757d?text=View+4">
+                <img src="https://placehold.co/160/f0e6d6/6c757d?text=4" alt="" onerror="this.style.visibility='hidden'">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div class="col-lg-6">
+          <div class="pd-info">
+            <h1 class="pd-name">UniMate Ly Súc Miệng Bằng Sứ</h1>
+
+            <div class="pd-meta">
+              <span class="sku"><strong>SKU:</strong> 4550583680220</span>
+              <span>·</span>
+              <span>1 Đã bán</span>
+              <span>·</span>
+              <span class="stock">Còn hàng</span>
+            </div>
+
+            <div class="pd-price-block">
+              <span class="pd-price">146.000<small>VND</small></span>
+            </div>
+
+            <div class="pd-short-desc">
+              Cốc dùng trong phòng tắm có cảm giác dịu nhẹ khi tiếp xúc với môi. Được làm từ đá sứ Amakusa bền chắc, nghiền nhỏ và nhào thành đất, tạo nên chất sứ trắng hơi ánh xanh.
+            </div>
+
+            <div class="pd-actions">
+              <div class="pd-qty-row">
+                <span class="label">Số lượng:</span>
+                <div class="qty-group">
+                  <button class="qty-btn" type="button" id="qtyMinus" disabled aria-label="Giảm">−</button>
+                  <input type="text" class="qty-input" id="qtyInput" value="1" aria-label="Số lượng">
+                  <button class="qty-btn" type="button" id="qtyPlus" aria-label="Tăng">+</button>
+                </div>
+              </div>
+
+              <div class="pd-buttons">
+                <button class="btn-add-cart" type="button">
+                  <i class="bi bi-cart-plus"></i> Thêm vào giỏ
+                </button>
+                <button class="btn-wish" type="button" aria-label="Yêu thích">
+                  <i class="bi bi-heart"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="pd-share">
+              <strong>Chia sẻ:</strong>
+              <div class="share-icons">
+                <button class="fb" type="button" aria-label="Facebook"><i class="bi bi-facebook"></i></button>
+                <button class="zalo" type="button" aria-label="Zalo"><i class="bi bi-chat-dots-fill"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="pd-tabs">
+        <div class="pd-tab-head">
+          <button class="pd-tab-btn active" data-tab="desc">Mô tả sản phẩm</button>
+          <button class="pd-tab-btn" data-tab="spec">Thông số kỹ thuật / Kích thước</button>
+        </div>
+
+        <div class="pd-tab-panel active" id="panel-desc">
+          <div class="pd-desc">
+            <p><strong>UniMate Ly Súc Miệng Bằng Sứ</strong></p>
+            <p>Cốc dùng trong phòng tắm có cảm giác dịu nhẹ khi tiếp xúc với môi. Được làm từ đá sứ Amakusa bền chắc, nghiền nhỏ và nhào thành đất, tạo nên chất sứ trắng hơi ánh xanh.</p>
+            <p>Kích thước: ≈Đường kính 6.8 × Cao 8 cm.</p>
+            <p>Dung tích: Dung tích khi đổ đầy ≈155 mL.</p>
+            <p>Chất liệu: Sứ.</p>
+            <p>Lưu ý: Sản phẩm được làm bằng Sứ.</p>
+            <p>Sản xuất tại Nhật Bản.</p>
+          </div>
+        </div>
+
+        <div class="pd-tab-panel" id="panel-spec">
+          <table class="pd-spec-table">
+            <tbody>
+              <tr>
+                <td>Kích thước</td>
+                <td>≈Đường kính 6.8 × Cao 8 cm.</td>
+              </tr>
+              <tr>
+                <td>Dung tích</td>
+                <td>Dung tích khi đổ đầy ≈155 mL.</td>
+              </tr>
+              <tr>
+                <td>Chất liệu</td>
+                <td>Sứ.</td>
+              </tr>
+              <tr>
+                <td>Khả năng sử dụng</td>
+                <td>Có thể dùng trong máy rửa chén và lò vi sóng. Không dùng trong lò nướng.</td>
+              </tr>
+              <tr>
+                <td>Xuất xứ</td>
+                <td>Nhật Bản.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- RELATED — dùng đúng card của trang Sản phẩm -->
+      <div class="pd-related">
+        <h3 class="pd-related-title">Sản phẩm liên quan</h3>
+        <div class="pd-related-grid">
+
+          <a href="#" class="product-card-cat">
+            <div class="thumb">
+              <span class="label-new">Mới</span>
+              <button class="wishlist-btn" aria-label="Yêu thích"><i class="bi bi-heart"></i></button>
+              <img src="https://placehold.co/400/e9ecef/6c757d?text=SP+1" alt="" onerror="this.style.visibility='hidden'">
+            </div>
+            <div class="info">
+              <div class="p-name">UniMate Ly Súc Miệng Bằng Sứ - Xanh</div>
+              <div class="p-price">146.000<small>VND</small></div>
+              <div class="p-buy">Mua Hàng</div>
+            </div>
+          </a>
+
+          <a href="#" class="product-card-cat">
+            <div class="thumb">
+              <button class="wishlist-btn" aria-label="Yêu thích"><i class="bi bi-heart"></i></button>
+              <img src="https://placehold.co/400/e9ecef/6c757d?text=SP+2" alt="" onerror="this.style.visibility='hidden'">
+            </div>
+            <div class="info">
+              <div class="p-name">UniMate Hộp Đựng Tăm Bông Có Nắp</div>
+              <div class="p-price">39.000<small>VND</small></div>
+              <div class="p-buy">Mua Hàng</div>
+            </div>
+          </a>
+
+          <a href="#" class="product-card-cat">
+            <div class="thumb">
+              <button class="wishlist-btn" aria-label="Yêu thích"><i class="bi bi-heart"></i></button>
+              <img src="https://placehold.co/400/e9ecef/6c757d?text=SP+3" alt="" onerror="this.style.visibility='hidden'">
+            </div>
+            <div class="info">
+              <div class="p-name">UniMate Tăm Bông</div>
+              <div class="p-price">58.000<small>VND</small></div>
+              <div class="p-buy">Mua Hàng</div>
+            </div>
+          </a>
+
+          <a href="#" class="product-card-cat">
+            <div class="thumb">
+              <button class="wishlist-btn" aria-label="Yêu thích"><i class="bi bi-heart"></i></button>
+              <img src="https://placehold.co/400/e9ecef/6c757d?text=SP+4" alt="" onerror="this.style.visibility='hidden'">
+            </div>
+            <div class="info">
+              <div class="p-name">UniMate Lược Chải Tóc Chăm Sóc Da Đầu</div>
+              <div class="p-price">294.000<small>VND</small></div>
+              <div class="p-buy">Mua Hàng</div>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- STICKY BOTTOM (mobile) -->
+    <div class="pd-sticky-mobile" id="pdStickyMobile">
+      <span class="price-mini">146.000<small>VND</small></span>
+      <button class="btn-add-cart-mini" type="button">Thêm vào giỏ</button>
+    </div>
+
+  </main>
+
+
+  <!-- FOOTER — copy từ trang chủ -->
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Ẩn ảnh lỗi
+    (function () {
+      function hideBroken(img) { img.style.visibility = 'hidden'; }
+      function scan() {
+        document.querySelectorAll('img').forEach(img => {
+          if (img.complete && img.naturalWidth === 0) hideBroken(img);
+          else img.addEventListener('error', () => hideBroken(img), { once: true });
+        });
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scan);
+      else scan();
+    })();
+
+    // Gallery
+    const mainImg = document.getElementById('pdMainImage');
+    document.querySelectorAll('.pd-thumb').forEach(thumb => {
+      thumb.addEventListener('click', () => {
+        document.querySelectorAll('.pd-thumb').forEach(t => t.classList.remove('active'));
+        thumb.classList.add('active');
+        mainImg.src = thumb.dataset.img;
+        mainImg.style.visibility = 'visible';
+      });
+    });
+
+    // Quantity
+    const qtyInput = document.getElementById('qtyInput');
+    const qtyMinus = document.getElementById('qtyMinus');
+    const qtyPlus = document.getElementById('qtyPlus');
+    const QTY_MIN = 1;
+    const QTY_MAX = 5;
+
+    function updateQtyControls() {
+      const v = parseInt(qtyInput.value, 10) || QTY_MIN;
+      qtyMinus.disabled = v <= QTY_MIN;
+      qtyPlus.disabled = v >= QTY_MAX;
+    }
+    qtyMinus.addEventListener('click', () => {
+      let v = parseInt(qtyInput.value, 10) || QTY_MIN;
+      if (v > QTY_MIN) qtyInput.value = v - 1;
+      updateQtyControls();
+    });
+    qtyPlus.addEventListener('click', () => {
+      let v = parseInt(qtyInput.value, 10) || QTY_MIN;
+      if (v < QTY_MAX) qtyInput.value = v + 1;
+      updateQtyControls();
+    });
+    qtyInput.addEventListener('input', () => {
+      let v = parseInt(qtyInput.value, 10);
+      if (isNaN(v) || v < QTY_MIN) v = QTY_MIN;
+      if (v > QTY_MAX) v = QTY_MAX;
+      qtyInput.value = v;
+      updateQtyControls();
+    });
+    updateQtyControls();
+
+    // Tabs
+    document.querySelectorAll('.pd-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.pd-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.pd-tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('panel-' + tab).classList.add('active');
+      });
+    });
+
+    // Sticky mobile
+    (function () {
+      const sticky = document.getElementById('pdStickyMobile');
+      const trigger = document.querySelector('.pd-info');
+      if (!sticky || !trigger) return;
+      function check() {
+        const rect = trigger.getBoundingClientRect();
+        if (rect.bottom < 100) sticky.classList.add('show');
+        else sticky.classList.remove('show');
+      }
+      window.addEventListener('scroll', check, { passive: true });
+      window.addEventListener('resize', check);
+      check();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+import { api, setAccessToken, setRefreshToken, clearTokens, setOnAuthFail } from '../api/client';
+
+const AuthCtx = createContext(null);
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [ready, setReady] = useState(false);
+  const booted = useRef(false);
+
+  const logout = useCallback(async () => {
+    try { await api.post('/auth/logout'); } catch { /* ignore */ }
+    clearTokens();
+    setUser(null);
+  }, []);
+
+  useEffect(() => { setOnAuthFail(() => { clearTokens(); setUser(null); }); }, []);
+
+  // Gộp giỏ vãng lai vào giỏ tài khoản sau khi đăng nhập/đăng ký
+  const mergeGuestCart = useCallback(async () => {
+    const sid = localStorage.getItem('unimate_session');
+    if (!sid) return;
+    try {
+      const { data } = await api.get('/cart', { params: { session_id: sid } });
+      const items = data.items || [];
+      for (const it of items) {
+        await api.post('/cart/items', { variant_id: it.variant_id, quantity: it.quantity });
+      }
+      if (items.length) await api.delete('/cart', { params: { session_id: sid } });
+    } catch { /* ignore */ }
+  }, []);
+
+  const login = useCallback(async (identifier, password) => {
+    const { data } = await api.post('/auth/login', { identifier, password });
+    setAccessToken(data.accessToken);
+    if (data.refreshToken) setRefreshToken(data.refreshToken);
+    await mergeGuestCart();
+    const me = await api.get('/auth/me');
+    setUser(me.data.user);
+    return me.data.user;
+  }, [mergeGuestCart]);
+
+  const register = useCallback(async (payload) => {
+    const { data } = await api.post('/auth/register', payload);
+    setAccessToken(data.accessToken);
+    if (data.refreshToken) setRefreshToken(data.refreshToken);
+    await mergeGuestCart();
+    const me = await api.get('/auth/me');
+    setUser(me.data.user);
+    return me.data.user;
+  }, [mergeGuestCart]);
+
+  useEffect(() => {
+    if (booted.current) return;
+    booted.current = true;
+    (async () => {
+      try {
+        const { data } = await api.post('/auth/refresh', {});
+        setAccessToken(data.accessToken);
+        if (data.refreshToken) setRefreshToken(data.refreshToken);
+        const me = await api.get('/auth/me');
+        setUser(me.data.user);
+      } catch { clearTokens(); setUser(null); }
+      finally { setReady(true); }
+    })();
+  }, []);
+
+  return <AuthCtx.Provider value={{ user, setUser, login, register, logout, ready }}>{children}</AuthCtx.Provider>;
+}
+
+export const useAuth = () => useContext(AuthCtx);

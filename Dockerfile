@@ -1,0 +1,18 @@
+# Build SPA (bien API nap luc build) roi phuc vu bang nginx
+FROM node:22-alpine AS build
+WORKDIR /app
+ARG VITE_API_BASE=https://api.example.com/api
+ARG VITE_FILES_BASE=https://api.example.com/files/unimate
+ENV VITE_API_BASE=$VITE_API_BASE
+ENV VITE_FILES_BASE=$VITE_FILES_BASE
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY index.html vite.config.js ./
+COPY public ./public
+COPY src ./src
+RUN npm run build
+
+FROM nginx:alpine
+COPY docker/nginx-client.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80
