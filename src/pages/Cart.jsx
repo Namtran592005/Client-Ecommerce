@@ -43,7 +43,7 @@ export default function Cart() {
           </div>
         ) : (
           <div className="row g-4">
-            <div className="col-lg-8">
+            <div className="col-lg-8 cart-items-wrap">
               {cart.items.map((it) => (
                 <div key={it.id} className="cart-item">
                   <div className="cart-thumb">

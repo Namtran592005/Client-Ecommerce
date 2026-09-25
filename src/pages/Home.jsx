@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { api } from '../api/client';
+import { api, fileUrl } from '../api/client';
 import { ProductCardHome } from '../components/Shop';
 import HeroSlider from '../components/HeroSlider';
 import { useSlider } from '../components/Layout';
@@ -68,8 +68,8 @@ export default function Home() {
               {allCats.map((c) => (
                 <Link key={c.id} to={`/san-pham?danh-muc=${c.id}`} className={`qc-item${c.depth ? ' is-child' : ''}`}>
                   <div className="qc-thumb">
-                    {c.icon
-                      ? <i className={`bi ${c.icon}`}></i>
+                    {c.image_key
+                      ? <img src={fileUrl(c.image_key)} alt="" loading="lazy" />
                       : <span className="qc-initial">{c.name[0]}</span>}
                   </div>
                   <span className="qc-label">{c.name}</span>

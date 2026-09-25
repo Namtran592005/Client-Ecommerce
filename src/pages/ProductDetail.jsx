@@ -235,9 +235,9 @@ export default function ProductDetail() {
       {light && main && (
         <div className="pd-lightbox active" onClick={() => setLight(false)}>
           <button className="lb-close" aria-label="Đóng">×</button>
-          <button className="lb-nav lb-prev" aria-label="Trước" onClick={(e) => { e.stopPropagation(); setImg((img - 1 + imgs.length) % imgs.length); }}>‹</button>
+          <button className="lb-nav lb-prev" aria-label="Ảnh trước" onClick={(e) => { e.stopPropagation(); setImg((img - 1 + imgs.length) % imgs.length); }}><i className="bi bi-chevron-left" aria-hidden="true"></i></button>
           <img src={main} alt="" onClick={(e) => e.stopPropagation()} />
-          <button className="lb-nav lb-next" aria-label="Sau" onClick={(e) => { e.stopPropagation(); setImg((img + 1) % imgs.length); }}>›</button>
+          <button className="lb-nav lb-next" aria-label="Ảnh sau" onClick={(e) => { e.stopPropagation(); setImg((img + 1) % imgs.length); }}><i className="bi bi-chevron-right" aria-hidden="true"></i></button>
         </div>
       )}
     </main>
