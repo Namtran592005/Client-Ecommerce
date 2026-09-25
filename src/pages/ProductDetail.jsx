@@ -171,7 +171,7 @@ export default function ProductDetail() {
                     <i className="bi bi-cart-plus"></i> Thêm vào giỏ
                   </button>
                   <button className="btn-buy-now" type="button" onClick={buyNow}>
-                    <i className="bi bi-lightning-charge-fill"></i> Mua ngay
+                    Mua ngay
                   </button>
                   <button className="btn-wish" type="button" aria-label="Yêu thích" onClick={wish}>
                     <i className="bi bi-heart"></i>
