@@ -45,12 +45,15 @@ src/
 ├── auth/           # đăng nhập/đăng ký, giữ phiên khi F5
 ├── cart/           # giỏ hàng dùng chung + badge số lượng
 ├── components/     # Layout.jsx (header/footer/nav mobile), Shop.jsx (thẻ SP, phân trang),
-│                   # Toast.jsx (thông báo kiểu pill tối)
-├── pages/          # Home (slide banner tự quản lý), Shop, ProductDetail, Cart, Checkout,
+│                   # HeroSlider.jsx (slide banner), Toast.jsx (thông báo kiểu pill tối)
+├── pages/          # Home, Shop, ProductDetail, Cart, Checkout,
 │                   # Auth (login/register), Account (5 tab), Promo
 └── theme.css       # màu thương hiệu xanh logo (#0b3d9e) + cam (#f59e0b), responsive
 ```
-Slide banner ở `pages/Home.jsx` dùng `Carousel` của Bootstrap theo kiểu React (tự tạo
-và huỷ instance theo vòng đời) nên vẫn chạy đúng khi chuyển trang trong cùng ứng dụng —
-không phụ thuộc `data-bs-ride` của Bootstrap.
+Slide banner ở `components/HeroSlider.jsx` dùng **Carousel chuẩn của Bootstrap** (đúng cấu trúc
+`.carousel > .carousel-inner > .carousel-item`, nút điều khiển và chấm điểm dùng `data-bs-*`).
+React chỉ tạo/huỷ đúng một instance `Carousel` theo vòng đời component và **không tự cập nhật
+class `active`** — Bootstrap tự lo, nên chấm điểm, nút trước/sau và vòng lặp không bị lệch.
+Banner luôn giữ tỉ lệ **16:9**; dùng `<picture>` để đổi sang ảnh `mobile_image_media_id`
+mà admin chọn trên màn hình nhỏ, nhờ vậy chữ trên banner không bị cắt ở điện thoại.
 API backend xem tại `backend/docs/API.md`.
