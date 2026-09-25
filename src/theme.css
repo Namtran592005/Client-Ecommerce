@@ -72,10 +72,13 @@ a { text-decoration: none; }
 .search-lightbox-inner .btn-search { background: var(--unimate-primary); color: #fff; border: none; border-radius: 6px; padding: 10px 16px; font-size: 15px; cursor: pointer; flex-shrink: 0; }
 .search-lightbox-inner .btn-close-x { background: none; border: none; color: #666; font-size: 22px; cursor: pointer; padding: 0 4px; flex-shrink: 0; line-height: 1; }
 
-/* ===== BANNER / HERO (Bootstrap carousel, 16:9) ===== */
-.banner-wrap { padding-top: 40px; }
-@media (max-width: 991.98px) { .banner-wrap { padding-top: 32px; } }
-@media (max-width: 767.98px) { .banner-wrap { padding-top: 22px; } }
+/* ===== BANNER / HERO (Bootstrap carousel, 16:9, tran full width) ===== */
+.banner-wrap {
+  width: 100%;
+  padding: 48px 0 0;
+}
+@media (max-width: 991.98px) { .banner-wrap { padding-top: 38px; } }
+@media (max-width: 767.98px) { .banner-wrap { padding-top: 26px; } }
 
 .hero {
   position: relative;

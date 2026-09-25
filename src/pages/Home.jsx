@@ -48,7 +48,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="section-wrap banner-wrap">
+      <div className="banner-wrap">
         <HeroSlider slides={banners} />
       </div>
 
