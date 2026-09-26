@@ -8,6 +8,7 @@ import { Container } from '../components/Layout';
 import { Button } from '../components/ui/button';
 import { Input, Select, Checkbox, Field } from '../components/ui/input';
 import { Chip, Empty } from '../components/ui/misc';
+import { ProvinceWardFields } from '../components/AddressFields';
 
 const PAY_META = {
   cod: { icon: 'bi-cash-coin', desc: 'Trả tiền mặt khi nhận hàng' },
@@ -40,7 +41,7 @@ export default function Checkout() {
   const loc = useLocation();
   const [addr, setAddr] = useState({
     recipient_name: '', phone: user?.phone || '', email: user?.email || '',
-    province_name: '', district_name: '', ward_name: '', address_line: '',
+    province_code: '', province_name: '', ward_name: '', address_line: '',
   });
   const [payMethods, setPayMethods] = useState([]);
   const [shipMethods, setShipMethods] = useState([]);
@@ -62,7 +63,7 @@ export default function Checkout() {
         if (d) {
           setAddr({
             recipient_name: d.recipient_name, phone: d.phone, email: user.email || '',
-            province_name: d.province_name, district_name: d.district_name || '',
+            province_code: d.province_code || '', province_name: d.province_name,
             ward_name: d.ward_name || '', address_line: d.address_line,
           });
         } else {
@@ -142,12 +143,12 @@ export default function Checkout() {
                 <Field label="Địa chỉ (số nhà, đường)" required className="sm:col-span-2">
                   <Input value={addr.address_line} onChange={(e) => setA('address_line', e.target.value)} placeholder="123 Lê Lợi" />
                 </Field>
-                <Field label="Xã / Phường" required>
-                  <Input value={addr.ward_name} onChange={(e) => setA('ward_name', e.target.value)} placeholder="Phường 1" />
-                </Field>
-                <Field label="Tỉnh / Thành phố" required>
-                  <Input value={addr.province_name} onChange={(e) => setA('province_name', e.target.value)} placeholder="TP. Hồ Chí Minh" />
-                </Field>
+                <ProvinceWardFields
+                  provinceCode={addr.province_code}
+                  provinceName={addr.province_name}
+                  wardName={addr.ward_name}
+                  onChange={setA}
+                />
                 <Field label="Email nhận hoá đơn">
                   <Input type="email" value={addr.email} onChange={(e) => setA('email', e.target.value)} />
                 </Field>

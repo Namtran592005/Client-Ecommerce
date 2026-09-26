@@ -175,35 +175,41 @@ export function AboutPage() {
         ) : stores.length === 0 ? (
           <Empty title="Chưa có cửa hàng" desc="Danh sách cửa hàng đang được cập nhật." />
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             {stores.map((s, i) => (
               <Card key={i} className="overflow-hidden">
-                {s.image ? (
-                  <img src={s.image} alt={s.name} loading="lazy" className="h-44 w-full object-cover object-top" />
-                ) : (
-                  <span className="grid h-40 w-full place-items-center bg-gradient-to-br from-brand-600 to-brand-400 text-[28px] font-bold text-white">
-                    {(s.name || '?').trim().charAt(0).toUpperCase()}
-                  </span>
-                )}
+                <div className="flex flex-col items-center gap-3 border-b border-line bg-[#fbfcfd] p-5 sm:flex-row sm:items-start">
+                  {s.image ? (
+                    <img
+                      src={s.image}
+                      alt={s.name}
+                      loading="lazy"
+                      className="size-28 shrink-0 rounded-xl border border-line bg-white object-contain p-2"
+                    />
+                  ) : (
+                    <span className="grid size-28 shrink-0 place-items-center rounded-xl border border-line bg-white text-[32px] font-bold text-brand-500">
+                      {(s.name || '?').trim().charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                  <div className="min-w-0 text-center sm:pt-1 sm:text-left">
+                    <h3 className="text-[16px] font-bold text-ink">{s.name}</h3>
+                    {s.hours && (
+                      <p className="mt-0.5 text-[12.5px] text-slate-500">{s.hours}</p>
+                    )}
+                  </div>
+                </div>
                 <CardContent className="p-4">
-                  <h3 className="text-[15px] font-bold text-ink">{s.name}</h3>
-                  <ul className="mt-2 grid gap-1.5 text-[13.5px] text-slate-600">
+                  <ul className="grid gap-2 text-[13.5px] text-slate-600">
                     {s.address && (
-                      <li className="flex items-start gap-2">
-                        <i className="bi bi-geo-alt mt-0.5 shrink-0 text-brand-500" aria-hidden="true" />
+                      <li className="flex items-start gap-2.5">
+                        <i className="bi bi-geo-alt mt-0.5 shrink-0 text-[15px] text-brand-500" aria-hidden="true" />
                         <span>{s.address}</span>
                       </li>
                     )}
                     {s.phone && (
-                      <li className="flex items-center gap-2">
-                        <i className="bi bi-telephone shrink-0 text-brand-500" aria-hidden="true" />
+                      <li className="flex items-center gap-2.5">
+                        <i className="bi bi-telephone shrink-0 text-[15px] text-brand-500" aria-hidden="true" />
                         <a href={`tel:${s.phone.replace(/\s/g, '')}`} className="hover:text-brand-600">{s.phone}</a>
-                      </li>
-                    )}
-                    {s.hours && (
-                      <li className="flex items-start gap-2">
-                        <i className="bi bi-clock mt-0.5 shrink-0 text-brand-500" aria-hidden="true" />
-                        <span>{s.hours}</span>
                       </li>
                     )}
                   </ul>

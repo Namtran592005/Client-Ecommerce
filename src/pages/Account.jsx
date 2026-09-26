@@ -8,6 +8,7 @@ import { Button } from '../components/ui/button';
 import { Input, Textarea, Select, Checkbox, Field } from '../components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent, Badge } from '../components/ui/card';
 import { Chip, Empty, QtyStepper } from '../components/ui/misc';
+import { ProvinceWardFields } from '../components/AddressFields';
 
 const VI_ORDER = {
   pending: 'Chờ xác nhận', confirmed: 'Đã xác nhận', processing: 'Đang xử lý', packed: 'Đã đóng gói',
@@ -553,7 +554,8 @@ function Addresses() {
   const { user } = useAuth();
   const [rows, setRows] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [f, setF] = useState({ recipient_name: '', phone: '', province_name: '', district_name: '', ward_name: '', address_line: '', is_default: false });
+  const EMPTY_ADDR = { recipient_name: '', phone: '', province_code: '', province_name: '', ward_name: '', address_line: '', is_default: false };
+  const [f, setF] = useState({ ...EMPTY_ADDR });
 
   const load = () => api.get('/auth/me').then((r) => setRows(r.data.addresses || [])).catch(() => setRows([]));
   useEffect(() => { load(); }, []);
@@ -568,7 +570,7 @@ function Addresses() {
     setSaving(true);
     try {
       await api.post(`/users/${user.id}/addresses`, f);
-      setF({ recipient_name: '', phone: '', province_name: '', district_name: '', ward_name: '', address_line: '', is_default: false });
+      setF({ ...EMPTY_ADDR });
       toast.success('Đã thêm địa chỉ');
       load();
     } catch (err) { toast.error(errMsg(err)); }
@@ -623,9 +625,12 @@ function Addresses() {
           <div className="grid gap-3.5 sm:grid-cols-2">
             <Field label="Người nhận" required><Input value={f.recipient_name} onChange={(e) => setA('recipient_name', e.target.value)} placeholder="Nguyễn Văn A" /></Field>
             <Field label="Số điện thoại" required><Input type="tel" value={f.phone} onChange={(e) => setA('phone', e.target.value)} placeholder="09xx xxx xxx" /></Field>
-            <Field label="Tỉnh / Thành phố" required><Input value={f.province_name} onChange={(e) => setA('province_name', e.target.value)} placeholder="TP. Hồ Chí Minh" /></Field>
-            <Field label="Xã / Phường" required><Input value={f.ward_name} onChange={(e) => setA('ward_name', e.target.value)} placeholder="Phường 1" /></Field>
-            <Field label="Quận / Huyện"><Input value={f.district_name} onChange={(e) => setA('district_name', e.target.value)} /></Field>
+            <ProvinceWardFields
+              provinceCode={f.province_code}
+              provinceName={f.province_name}
+              wardName={f.ward_name}
+              onChange={setA}
+            />
             <Field label="Địa chỉ (số nhà, đường)" required className="sm:col-span-2"><Input value={f.address_line} onChange={(e) => setA('address_line', e.target.value)} placeholder="123 Lê Lợi" /></Field>
           </div>
           <label className="flex items-center gap-2 text-[13px] text-slate-700">
