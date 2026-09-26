@@ -9,6 +9,7 @@ import { Input, Textarea, Select, Checkbox, Field } from '../components/ui/input
 import { Card, CardHeader, CardTitle, CardContent, Badge } from '../components/ui/card';
 import { Chip, Empty, QtyStepper } from '../components/ui/misc';
 import { ProvinceWardFields } from '../components/AddressFields';
+import LazyImg from '../components/LazyImg';
 
 const VI_ORDER = {
   pending: 'Chờ xác nhận', confirmed: 'Đã xác nhận', processing: 'Đang xử lý', packed: 'Đã đóng gói',
@@ -456,7 +457,7 @@ function OrderDetail() {
               <li key={i.id} className="flex items-center gap-3 border-b border-line py-3 last:border-0">
                 <span className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-lg border border-line bg-[#f8fafc]">
                   {i.image_url_snapshot
-                    ? <img src={i.image_url_snapshot} alt="" loading="lazy" className="size-full object-contain p-1" />
+                    ? <LazyImg src={i.image_url_snapshot} alt="" className="size-full object-contain p-1" />
                     : <i className="bi bi-image text-slate-300" aria-hidden="true" />}
                 </span>
                 <div className="min-w-0 flex-1">
@@ -677,7 +678,7 @@ function Wishlist() {
               <li key={i.product_id} className="flex items-center gap-3 border-b border-line py-3 last:border-0">
                 <Link to={`/san-pham/${i.slug}`} className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-lg border border-line bg-[#f8fafc]">
                   {i.image_key
-                    ? <img src={fileUrl(i.image_key)} alt="" loading="lazy" className="size-full object-contain p-1" />
+                    ? <LazyImg src={fileUrl(i.image_key)} alt="" className="size-full object-contain p-1" />
                     : <i className="bi bi-image text-slate-300" aria-hidden="true" />}
                 </Link>
                 <div className="min-w-0 flex-1">

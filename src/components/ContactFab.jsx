@@ -51,7 +51,7 @@ export default function ContactFab() {
                 onClick={() => setOpen(false)}
                 className={`grid ${SIZE} place-items-center rounded-full bg-white shadow-pop ring-1 ring-line transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50`}
               >
-                <img src={c.img} alt="" className="size-6 object-contain" loading="lazy" />
+                <img src={c.img} alt="" className="size-6 object-contain" decoding="async" />
               </a>
             </li>
           ))}

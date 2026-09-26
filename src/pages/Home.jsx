@@ -5,6 +5,7 @@ import { ProductCardHome } from '../components/Shop';
 import HeroSlider from '../components/HeroSlider';
 import { useSlider, Container } from '../components/Layout';
 import { SectionHead } from '../components/ui/misc';
+import LazyImg from '../components/LazyImg';
 
 const Arrow = ({ dir, show, onClick, label }) => (
   <button
@@ -33,9 +34,9 @@ function ProductSlider({ items, badge }) {
       <Fade dir="right" show={s.canNext} />
       <Arrow dir="left" show={s.canPrev} onClick={s.prev} label="Sản phẩm trước" />
       <div ref={s.trackRef} className="hscroll gap-3 pb-1">
-        {items.map((p) => (
+        {items.map((p, i) => (
           <div key={p.id} className="w-[168px] shrink-0 sm:w-[196px] lg:w-[212px]">
-            <ProductCardHome p={p} badge={badge} />
+            <ProductCardHome p={p} badge={badge} priority={i < 4} />
           </div>
         ))}
       </div>
@@ -63,10 +64,10 @@ function QuickCatalog({ cats }) {
               >
                 <span className="block w-full overflow-hidden rounded-xl bg-mist transition-transform duration-200 group-hover:scale-105 group-focus-visible:scale-105">
                   {c.image_key ? (
-                    <img
+                    <LazyImg
                       src={fileUrl(c.image_key)}
                       alt=""
-                      loading="lazy"
+                      eager
                       className="aspect-square w-full object-cover"
                     />
                   ) : (

@@ -6,6 +6,7 @@ import { Container } from '../components/Layout';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Empty, QtyStepper, Chip } from '../components/ui/misc';
+import LazyImg from '../components/LazyImg';
 
 const SHIP_FEE = 30000;
 const money = (n) => `${fmtVND(n).replace('₫', '')}VND`;
@@ -64,7 +65,7 @@ export default function Cart() {
                 <li key={it.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-white p-3 shadow-card sm:flex-nowrap sm:gap-4">
                   <Link to={`/san-pham/${it.slug || ''}`} className="grid size-[68px] shrink-0 place-items-center overflow-hidden rounded-lg border border-line bg-[#f8fafc]">
                     {it.image_key
-                      ? <img src={fileUrl(it.image_key)} alt="" loading="lazy" className="size-full object-contain p-1" />
+                      ? <LazyImg src={fileUrl(it.image_key)} alt="" className="size-full object-contain p-1" />
                       : <i className="bi bi-image text-slate-300" aria-hidden="true" />}
                   </Link>
 

@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext';
 import { useCart } from '../cart/CartContext';
 import { api } from '../api/client';
 import SearchBox from './SearchBox';
+import LazyImg from './LazyImg';
 
 // Hook slider: nút mũi tên + kéo chuột
 export function useSlider() {
@@ -293,7 +294,7 @@ export function Footer() {
                   aria-label={label}
                   className="grid size-9 place-items-center rounded-lg bg-mist transition-colors hover:bg-brand-50"
                 >
-                  <img src={icon} alt="" className="size-[18px] object-contain" loading="lazy" />
+                  <LazyImg src={icon} alt="" className="size-[18px] object-contain" />
                 </a>
               ))}
             </div>

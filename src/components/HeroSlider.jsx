@@ -55,8 +55,8 @@ export default function HeroSlider({ slides = [], interval = 5500 }) {
                 className="block size-full object-cover"
                 src={s.url}
                 alt={s.alt_text || s.title || ''}
-                loading={i === 0 ? 'eager' : 'lazy'}
                 decoding="async"
+                fetchPriority={i === index ? 'high' : 'low'}
               />
             </picture>
           );

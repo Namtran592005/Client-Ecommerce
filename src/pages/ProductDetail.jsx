@@ -4,6 +4,7 @@ import { api, fmtVND, fileUrl, errMsg } from '../api/client';
 import { useCart } from '../cart/CartContext';
 import { useAuth } from '../auth/AuthContext';
 import { toast } from '../components/ui/toast';
+import LazyImg from '../components/LazyImg';
 import { ProductCardCat } from '../components/Shop';
 import { Container } from '../components/Layout';
 import { Button } from '../components/ui/button';
@@ -150,7 +151,7 @@ export default function ProductDetail() {
                     aria-current={i === img}
                     className={`size-[68px] shrink-0 overflow-hidden rounded-lg border-2 bg-white transition-colors sm:size-[76px] ${i === img ? 'border-brand-500' : 'border-line hover:border-slate-300'}`}
                   >
-                    <img src={u} alt="" loading="lazy" className="size-full object-contain p-1" />
+                    <LazyImg src={u} alt="" className="size-full object-contain p-1" />
                   </button>
                 ))}
               </div>
@@ -251,7 +252,7 @@ export default function ProductDetail() {
                 onClick={() => window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href))}
                 className="grid size-8 place-items-center rounded-lg bg-mist transition-colors hover:bg-brand-50"
               >
-                <img src="/brand/facebook.svg" alt="" className="size-4 object-contain" loading="lazy" />
+                <img src="/brand/facebook.svg" alt="" className="size-4 object-contain" decoding="async" />
               </button>
               <button
                 type="button"

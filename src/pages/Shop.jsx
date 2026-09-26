@@ -264,7 +264,7 @@ export default function Shop() {
             </div>
 
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
-              {rows.map((p) => <ProductCardCat key={p.id} p={p} />)}
+              {rows.map((p, i) => <ProductCardCat key={p.id} p={p} priority={i < 8} />)}
             </div>
 
             {!rows.length && (

@@ -125,7 +125,7 @@ export default function SearchBox({ value, onChange, onSubmit, variant = 'header
                     className={`flex w-full items-center gap-2.5 px-3 py-2 text-left transition-colors ${i === active ? 'bg-brand-50' : 'hover:bg-slate-50'}`}
                   >
                     <span className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-md border border-line bg-mist">
-                      {imgOf(p) ? <img src={imgOf(p)} alt="" loading="lazy" className="size-full object-contain p-0.5" /> : null}
+                      {imgOf(p) ? <img src={imgOf(p)} alt="" decoding="async" className="size-full object-contain p-0.5" /> : null}
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="line-clamp-1 block text-[13px] font-medium text-slate-800">{p.name}</span>

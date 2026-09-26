@@ -5,6 +5,7 @@ import { toast } from './ui/toast';
 import { Button } from './ui/button';
 import { Stars } from './ui/misc';
 import { cn } from '../lib/utils';
+import LazyImg from './LazyImg';
 
 export function imgOf(p, i = 0) {
   const imgs = p.images || [];
@@ -12,16 +13,17 @@ export function imgOf(p, i = 0) {
   return '';
 }
 
-function Thumb({ p, size = 28, children }) {
+function Thumb({ p, size = 28, priority = false, children }) {
   const src = imgOf(p);
   return (
     <div className="relative overflow-hidden rounded-t-xl bg-[#f8fafc]">
       <Link to={`/san-pham/${p.slug}`} className="block aspect-square">
         {src ? (
-          <img
+          <LazyImg
             src={src}
             alt={p.name}
-            loading="lazy"
+            eager={priority}
+            fetchPriority={priority ? 'high' : 'auto'}
             className="size-full object-contain p-2 transition-transform duration-200 hover:scale-[1.04]"
           />
         ) : (
@@ -55,11 +57,11 @@ const Price = ({ p, className = '' }) => {
 };
 
 // Thẻ sản phẩm — trang chủ
-export function ProductCardHome({ p, badge }) {
+export function ProductCardHome({ p, badge, priority = false }) {
   const nav = useNavigate();
   return (
     <article className="product-card flex h-full flex-col overflow-hidden rounded-xl border border-line bg-white shadow-card transition-shadow hover:shadow-pop">
-      <Thumb p={p}>
+      <Thumb p={p} priority={priority}>
         {badge && (
           <span className="absolute top-2 left-2 rounded-md bg-price px-1.5 py-0.5 text-[10.5px] font-semibold text-white">
             {badge}
@@ -81,7 +83,7 @@ export function ProductCardHome({ p, badge }) {
 }
 
 // Thẻ sản phẩm — trang danh mục (có nút yêu thích + điểm đánh giá)
-export function ProductCardCat({ p }) {
+export function ProductCardCat({ p, priority = false }) {
   const nav = useNavigate();
   const { user } = useAuth();
   const off = p.compare_at_price > p.base_price ? Math.round((1 - p.base_price / p.compare_at_price) * 100) : 0;
@@ -100,7 +102,7 @@ export function ProductCardCat({ p }) {
 
   return (
     <article className="product-card-cat flex h-full flex-col overflow-hidden rounded-xl border border-line bg-white shadow-card transition-shadow hover:shadow-pop">
-      <Thumb p={p} size={32}>
+      <Thumb p={p} size={32} priority={priority}>
         {off > 0 ? (
           <span className="absolute top-2 left-2 rounded-md bg-price px-1.5 py-0.5 text-[10.5px] font-bold text-white">-{off}%</span>
         ) : (

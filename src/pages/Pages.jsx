@@ -183,7 +183,7 @@ export function AboutPage() {
                     <img
                       src={s.image}
                       alt={s.name}
-                      loading="lazy"
+                      decoding="async"
                       className="size-28 shrink-0 rounded-xl border border-line bg-white object-contain p-2"
                     />
                   ) : (
