@@ -40,6 +40,22 @@ export default function Shop() {
   const [drawer, setDrawer] = useState(false);
   const [sortSheet, setSortSheet] = useState(false);
 
+  // Escape đóng lớp lọc / sắp xếp, và trả focus về body khi đang có ô nhập bên trong.
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key !== 'Escape') return;
+      if (sortSheet) setSortSheet(false);
+      else if (drawer) setDrawer(false);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [drawer, sortSheet]);
+
+  useEffect(() => {
+    document.body.style.overflow = (drawer || sortSheet) ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [drawer, sortSheet]);
+
   const cat = sp.get('danh-muc') || '';
   const q = sp.get('q') || '';
   const brand = sp.get('thuong-hieu') || '';
@@ -267,7 +283,7 @@ export default function Shop() {
       />
       <aside
         className={`fixed inset-y-0 left-0 z-50 flex w-[300px] max-w-[86vw] flex-col bg-white shadow-pop transition-transform duration-200 lg:hidden ${drawer ? 'translate-x-0' : '-translate-x-full'}`}
-        aria-hidden={!drawer}
+        inert={!drawer}
         aria-label="Bộ lọc"
       >
         <div className="flex items-center justify-between border-b border-line px-4 py-3">
@@ -295,7 +311,7 @@ export default function Shop() {
       />
       <div
         className={`fixed inset-x-0 bottom-0 z-50 rounded-t-2xl bg-white p-3 shadow-pop transition-transform duration-200 lg:hidden ${sortSheet ? 'translate-y-0' : 'translate-y-full'}`}
-        aria-hidden={!sortSheet}
+        inert={!sortSheet}
         role="dialog"
         aria-label="Sắp xếp"
       >

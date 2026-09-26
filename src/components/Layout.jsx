@@ -104,6 +104,8 @@ export function Header({ cats }) {
   const { count } = useCart();
   const [drawer, setDrawer] = useState(false);
   const [searchBox, setSearchBox] = useState(false);
+  const drawerRef = useRef(null);
+  const searchRef = useRef(null);
   const [q, setQ] = useState('');
   const [catsFull, setCatsFull] = useState(cats || []);
   const [shopMenu, setShopMenu] = useState(null);
@@ -134,6 +136,15 @@ export function Header({ cats }) {
     document.addEventListener('keydown', esc);
     return () => document.removeEventListener('keydown', esc);
   }, []);
+
+  // Đóng lớp phủ khi đang có ô nhập bên trong giữ focus -> trả focus về body.
+  // Nếu không, trình duyệt cảnh báo "Blocked aria-hidden ... retained focus".
+  useEffect(() => {
+    [drawerRef, searchRef].forEach((r) => {
+      const el = r.current;
+      if (el && el.contains(document.activeElement)) document.activeElement.blur();
+    });
+  }, [drawer, searchBox]);
 
   const submitSearch = () => {
     setSearchBox(false);
@@ -187,8 +198,9 @@ export function Header({ cats }) {
         aria-hidden="true"
       />
       <aside
+        ref={drawerRef}
         className={`fixed top-0 left-0 z-50 flex h-full w-[300px] max-w-[86vw] flex-col bg-white shadow-pop transition-transform duration-200 ${drawer ? 'translate-x-0' : '-translate-x-full'}`}
-        aria-hidden={!drawer}
+        inert={!drawer}
         aria-label="Menu điều hướng"
       >
         <div className="flex items-center justify-between border-b border-line px-4 py-3">
@@ -231,8 +243,9 @@ export function Header({ cats }) {
       </aside>
 
       <div
+        ref={searchRef}
         className={`fixed inset-x-0 top-0 z-50 bg-white px-3 py-3 shadow-pop transition-transform duration-200 md:hidden ${searchBox ? 'translate-y-0' : '-translate-y-full'}`}
-        aria-hidden={!searchBox}
+        inert={!searchBox}
       >
         <div className="flex items-center gap-2">
           <SearchBox variant="panel" autoFocus value={q} onChange={setQ} onSubmit={submitSearch} />

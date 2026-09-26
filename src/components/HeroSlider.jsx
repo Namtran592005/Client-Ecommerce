@@ -57,7 +57,6 @@ export default function HeroSlider({ slides = [], interval = 5500 }) {
                 alt={s.alt_text || s.title || ''}
                 loading={i === 0 ? 'eager' : 'lazy'}
                 decoding="async"
-                aria-hidden={i !== index}
               />
             </picture>
           );
@@ -67,7 +66,7 @@ export default function HeroSlider({ slides = [], interval = 5500 }) {
               role="group"
               aria-roledescription="slide"
               aria-label={`${i + 1} / ${total}`}
-              aria-hidden={i !== index}
+              inert={i !== index}
               className={`absolute inset-0 transition-opacity duration-500 ${i === index ? 'z-10 opacity-100' : 'z-0 opacity-0'}`}
             >
               {to.startsWith('http')
