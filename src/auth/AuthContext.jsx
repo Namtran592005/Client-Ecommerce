@@ -5,6 +5,7 @@ const AuthCtx = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [mustChangePassword, setMustChangePassword] = useState(false);
   const [ready, setReady] = useState(false);
   const booted = useRef(false);
 
@@ -12,6 +13,7 @@ export function AuthProvider({ children }) {
     try { await api.post('/auth/logout'); } catch { /* ignore */ }
     clearTokens();
     setUser(null);
+    setMustChangePassword(false);
   }, []);
 
   useEffect(() => { setOnAuthFail(() => { clearTokens(); setUser(null); }); }, []);
@@ -37,8 +39,14 @@ export function AuthProvider({ children }) {
     await mergeGuestCart();
     const me = await api.get('/auth/me');
     setUser(me.data.user);
+    setMustChangePassword(Boolean(me.data.mustChangePassword ?? data.mustChangePassword));
     return me.data.user;
   }, [mergeGuestCart]);
+
+  const changePassword = useCallback(async (oldPassword, newPassword) => {
+    await api.put('/auth/password', { old_password: oldPassword, new_password: newPassword });
+    setMustChangePassword(false);
+  }, []);
 
   const register = useCallback(async (payload) => {
     const { data } = await api.post('/auth/register', payload);
@@ -60,12 +68,17 @@ export function AuthProvider({ children }) {
         if (data.refreshToken) setRefreshToken(data.refreshToken);
         const me = await api.get('/auth/me');
         setUser(me.data.user);
+        setMustChangePassword(Boolean(me.data.mustChangePassword));
       } catch { clearTokens(); setUser(null); }
       finally { setReady(true); }
     })();
   }, []);
 
-  return <AuthCtx.Provider value={{ user, setUser, login, register, logout, ready }}>{children}</AuthCtx.Provider>;
+  return (
+    <AuthCtx.Provider value={{ user, setUser, login, register, logout, ready, mustChangePassword, changePassword }}>
+      {children}
+    </AuthCtx.Provider>
+  );
 }
 
 export const useAuth = () => useContext(AuthCtx);

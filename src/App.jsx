@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { api } from './api/client';
+import { useAuth } from './auth/AuthContext';
 import { Header, Footer } from './components/Layout';
 import { ToastRoot } from './components/Toast';
 import Home from './pages/Home';
@@ -10,13 +11,27 @@ import Cart from './pages/Cart';
 import Checkout, { CheckoutSuccess } from './pages/Checkout';
 import { Login, Register } from './pages/Auth';
 import Account from './pages/Account';
+import ForcePasswordChange from './pages/ForcePasswordChange';
 import Promo from './pages/Promo';
 
 export default function App() {
+  const { user, ready, mustChangePassword } = useAuth();
   const [cats, setCats] = useState([]);
   useEffect(() => {
     api.get('/categories/tree').then((r) => setCats(r.data)).catch(() => {});
   }, []);
+
+  if (ready && user && mustChangePassword) {
+    return (
+      <>
+        <Header cats={cats} />
+        <ForcePasswordChange />
+        <Footer />
+        <ToastRoot />
+      </>
+    );
+  }
+
   return (
     <BrowserRouter>
       <Header cats={cats} />
