@@ -6,6 +6,7 @@ import { Button } from '../components/ui/button';
 import { Input, Field } from '../components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
 import { Chip, Empty } from '../components/ui/misc';
+import { DatePicker } from '../components/ui/date-picker';
 
 const VI_STATUS = {
   pending: 'Chờ xác nhận', confirmed: 'Đã xác nhận', processing: 'Đang xử lý', packed: 'Đã đóng gói',
@@ -96,7 +97,12 @@ export default function OrderLookup() {
                 />
               </Field>
               <Field label="Ngày đặt hàng" required className="sm:col-span-2">
-                <Input type="date" value={form.date} onChange={set('date')} />
+                <DatePicker
+                  value={form.date}
+                  onChange={(v) => setForm((c) => ({ ...c, date: v }))}
+                  ariaLabel="Ngày đặt hàng"
+                  required
+                />
               </Field>
               {err && (
                 <p role="alert" className="flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-[13px] text-price sm:col-span-2">

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { api } from './api/client';
 import { useAuth } from './auth/AuthContext';
 import { Header, Footer } from './components/Layout';
+import ContactFab from './components/ContactFab';
 import { ToastRoot } from './components/ui/toast';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
@@ -63,6 +64,7 @@ export default function App() {
         </Routes>
       </main>
       <Footer />
+      <ContactFab />
       <ToastRoot />
     </BrowserRouter>
   );

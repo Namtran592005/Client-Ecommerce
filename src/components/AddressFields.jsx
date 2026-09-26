@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Field, Select } from './ui/input';
+import { Field } from './ui/input';
+import { SearchSelect } from './ui/search-select';
 
 // Danh sách tỉnh và phường lấy từ public/data/vn-provinces.json + vn-wards.json
 // (nguồn: github.com/thanglequoc/vietnamese-provinces-database, mô hình 34 tỉnh
@@ -124,36 +125,43 @@ export function ProvinceWardFields({
     if (guess) onChange('province_code', guess);
   }, [provinceCode, provinceName, provinces, onChange]);
 
+  const provinceOptions = useMemo(
+    () => provinces.map((p) => ({ value: p.code, label: p.name })),
+    [provinces],
+  );
+  const wardOptions = useMemo(() => list.map((w) => ({ value: w.name, label: w.name })), [list]);
+
   return (
     <>
       <Field label={provinceLabel} required>
-        <Select
+        <SearchSelect
           value={selected}
-          onChange={(e) => {
-            const code = e.target.value;
+          options={provinceOptions}
+          onChange={(code) => {
             onChange('province_code', code);
             onChange('province_name', (provinces.find((p) => p.code === code) || {}).name || '');
             onChange('ward_name', '');
           }}
-        >
-          <option value="">-- Chọn tỉnh / thành phố --</option>
-          {provinces.map((p) => <option key={p.code} value={p.code}>{p.name}</option>)}
-        </Select>
+          placeholder="Chọn tỉnh / thành phố"
+          searchPlaceholder="Tìm tỉnh / thành phố..."
+          ariaLabel={provinceLabel}
+          required
+          emptyText="Không tìm thấy tỉnh nào"
+        />
       </Field>
 
       <Field label={wardLabel} required>
-        <Select
+        <SearchSelect
           value={wardName || ''}
-          onChange={(e) => onChange('ward_name', e.target.value)}
+          options={wardOptions}
+          onChange={(name) => onChange('ward_name', name)}
           disabled={!selected || !wards}
-        >
-          <option value="">
-            {!wards ? 'Đang tải...'
-              : !selected ? '-- Chọn tỉnh / thành phố trước --'
-                : list.length ? '-- Chọn xã / phường --' : 'Tỉnh này chưa có dữ liệu xã phường'}
-          </option>
-          {list.map((w) => <option key={w.code} value={w.name}>{w.name}</option>)}
-        </Select>
+          placeholder={wards ? (selected ? 'Chọn xã / phường' : 'Chọn tỉnh trước') : 'Đang tải...'}
+          searchPlaceholder="Tìm xã / phường..."
+          ariaLabel={wardLabel}
+          required
+          emptyText={selected ? 'Tỉnh này chưa có dữ liệu xã phường' : 'Hãy chọn tỉnh trước'}
+        />
       </Field>
     </>
   );
