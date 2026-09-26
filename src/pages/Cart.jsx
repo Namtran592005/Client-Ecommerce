@@ -84,9 +84,10 @@ export default function Cart() {
                     <button
                       type="button"
                       onClick={() => removeItem(it.id)}
-                      className="inline-flex items-center gap-1 text-[12px] font-semibold text-slate-400 transition-colors hover:text-price"
+                      aria-label={`Xoá ${it.product_name}`}
+                      className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 text-[13px] font-medium text-price transition-colors hover:border-price hover:bg-red-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-price/40"
                     >
-                      <i className="bi bi-trash" aria-hidden="true" /> Xóa
+                      <i className="bi bi-trash3 text-[14px] leading-none" aria-hidden="true" /> Xoá
                     </button>
                   </div>
                 </li>

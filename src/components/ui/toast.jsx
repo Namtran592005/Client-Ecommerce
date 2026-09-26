@@ -37,17 +37,17 @@ export function ToastRoot() {
           <div
             key={t.id}
             role="status"
-            className="animate-[toastIn_.18s_ease-out] pointer-events-auto flex w-full max-w-[400px] items-start gap-2.5 rounded-lg border border-line bg-white py-2.5 pr-3 pl-3.5 shadow-pop"
+            className="animate-[toastIn_.18s_ease-out] pointer-events-auto flex w-full max-w-[400px] items-center gap-2.5 rounded-lg border border-line bg-white py-2 pr-2 pl-3 shadow-pop"
           >
-            <i className={cn('bi', tone.icon, tone.text, 'mt-px shrink-0 text-[15px] leading-none')} aria-hidden="true" />
-            <p className="min-w-0 flex-1 text-[13.5px] leading-snug font-medium text-slate-700">{t.msg}</p>
+            <i className={cn('bi', tone.icon, tone.text, 'shrink-0 text-[15px] leading-none')} aria-hidden="true" />
+            <p className="min-w-0 flex-1 text-[13.5px] leading-5 font-medium text-slate-700">{t.msg}</p>
             <button
               type="button"
               onClick={() => drop(t.id)}
               aria-label="Đóng thông báo"
-              className="-mt-0.5 -mr-0.5 shrink-0 rounded p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+              className="grid size-6 shrink-0 place-items-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
             >
-              <i className="bi bi-x-lg text-[11px] leading-none" aria-hidden="true" />
+              <i className="bi bi-x-lg text-[10px] leading-none" aria-hidden="true" />
             </button>
           </div>
         );

@@ -84,17 +84,17 @@ export default function HeroSlider({ slides = [], interval = 5500 }) {
             type="button"
             onClick={() => go(index - 1)}
             aria-label="Ảnh trước"
-            className="absolute top-1/2 left-1 z-20 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-white/85 text-brand-500 shadow-pop transition-colors hover:bg-white sm:size-10"
+            className="absolute top-1/2 left-0 z-20 grid size-9 -translate-y-1/2 place-items-center rounded-r-lg text-white/85 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 sm:left-1 sm:size-10 sm:rounded-full"
           >
-            <i className="bi bi-chevron-left text-lg leading-none" aria-hidden="true" />
+            <i className="bi bi-chevron-left text-xl leading-none sm:text-2xl" aria-hidden="true" />
           </button>
           <button
             type="button"
             onClick={() => go(index + 1)}
             aria-label="Ảnh sau"
-            className="absolute top-1/2 right-1 z-20 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-white/85 text-brand-500 shadow-pop transition-colors hover:bg-white sm:size-10"
+            className="absolute top-1/2 right-0 z-20 grid size-9 -translate-y-1/2 place-items-center rounded-l-lg text-white/85 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 sm:right-1 sm:size-10 sm:rounded-full"
           >
-            <i className="bi bi-chevron-right text-lg leading-none" aria-hidden="true" />
+            <i className="bi bi-chevron-right text-xl leading-none sm:text-2xl" aria-hidden="true" />
           </button>
           <div className="absolute inset-x-0 bottom-2 z-20 flex justify-center gap-1.5">
             {slides.map((s, i) => (

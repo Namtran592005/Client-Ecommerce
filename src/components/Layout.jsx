@@ -172,8 +172,18 @@ export function Header({ cats }) {
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Bạn đang muốn tìm kiếm gì?"
                 aria-label="Tìm kiếm sản phẩm"
-                className="h-9 w-full bg-transparent px-2 text-sm text-slate-800 outline-none placeholder:text-slate-400"
+                className="h-9 w-full min-w-0 bg-transparent px-2 text-sm text-slate-800 outline-none placeholder:text-slate-400"
               />
+              {q && (
+                <button
+                  type="button"
+                  onClick={() => setQ('')}
+                  aria-label="Xoá nội dung tìm kiếm"
+                  className="-mr-1 grid size-6 shrink-0 place-items-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                >
+                  <i className="bi bi-x-lg text-[11px] leading-none" aria-hidden="true" />
+                </button>
+              )}
             </form>
 
             <div className="ml-auto flex items-center gap-0.5 md:ml-0 md:gap-1">
@@ -253,8 +263,18 @@ export function Header({ cats }) {
               onChange={(e) => setQ(e.target.value)}
               placeholder="Bạn đang muốn tìm kiếm gì?"
               aria-label="Tìm kiếm sản phẩm"
-              className="h-10 w-full bg-transparent px-2 text-sm outline-none"
+              className="h-10 w-full min-w-0 bg-transparent px-2 text-sm outline-none"
             />
+            {q && (
+              <button
+                type="button"
+                onClick={() => setQ('')}
+                aria-label="Xoá nội dung tìm kiếm"
+                className="-mr-1 grid size-6 shrink-0 place-items-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+              >
+                <i className="bi bi-x-lg text-[11px] leading-none" aria-hidden="true" />
+              </button>
+            )}
           </div>
           <button type="submit" className="h-10 shrink-0 rounded-lg bg-brand-500 px-4 text-sm font-semibold text-white">Tìm</button>
           <button
