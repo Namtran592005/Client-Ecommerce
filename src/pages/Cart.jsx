@@ -46,7 +46,7 @@ export default function Cart() {
           </ol>
         </nav>
 
-        <h1 className="pb-4 text-[22px] font-extrabold tracking-tight text-ink sm:text-[26px]">
+        <h1 className="pb-4 text-[22px] font-bold tracking-tight text-ink sm:text-[26px]">
           Giỏ hàng <span className="text-[15px] font-semibold text-slate-400">({cart.items.length} sản phẩm)</span>
         </h1>
 
@@ -59,7 +59,7 @@ export default function Cart() {
           />
         ) : (
           <div className="grid gap-5 lg:grid-cols-[1fr_340px]">
-            <ul className="grid gap-3">
+            <ul className="grid content-start gap-3 self-start">
               {cart.items.map((it) => (
                 <li key={it.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-white p-3 shadow-card sm:flex-nowrap sm:gap-4">
                   <Link to={`/san-pham/${it.slug || ''}`} className="grid size-[68px] shrink-0 place-items-center overflow-hidden rounded-lg border border-line bg-[#f8fafc]">
@@ -138,7 +138,7 @@ export default function Cart() {
 
                 <div className="flex items-baseline justify-between border-t border-line pt-3">
                   <span className="text-[14px] font-semibold text-slate-700">Tổng cộng</span>
-                  <span className="text-[20px] font-extrabold text-price">{money(total)}</span>
+                  <span className="text-[20px] font-bold text-price">{money(total)}</span>
                 </div>
 
                 <Button

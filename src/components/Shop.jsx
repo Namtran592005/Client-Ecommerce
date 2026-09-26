@@ -1,24 +1,9 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { fmtVND, fileUrl, api } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
-import { useCart } from '../cart/CartContext';
-import { toast } from './Toast';
+import { toast } from './ui/toast';
 import { Button } from './ui/button';
 import { Stars } from './ui/misc';
-
-// Bấm "Mua ngay" ngoài thẻ: 1 biến thể -> thêm thẳng giỏ; nhiều biến thể -> qua trang chọn
-async function quickAdd(p, add, nav) {
-  try {
-    const { data } = await api.get(`/products/${p.id}`);
-    const act = (data.variants || []).filter((v) => v.status === 'active');
-    if (act.length === 1) {
-      await add(act[0].id, 1);
-      toast.success(`Đã thêm "${p.name}" vào giỏ hàng`);
-    } else {
-      nav(`/san-pham/${p.slug}`);
-    }
-  } catch { nav(`/san-pham/${p.slug}`); }
-}
 
 export function imgOf(p, i = 0) {
   const imgs = p.images || [];
@@ -71,7 +56,6 @@ const Price = ({ p, className = '' }) => {
 // Thẻ sản phẩm — trang chủ
 export function ProductCardHome({ p, badge }) {
   const nav = useNavigate();
-  const { add } = useCart();
   return (
     <article className="product-card flex h-full flex-col overflow-hidden rounded-xl border border-line bg-white shadow-card transition-shadow hover:shadow-pop">
       <Thumb p={p}>
@@ -89,7 +73,7 @@ export function ProductCardHome({ p, badge }) {
           {p.name}
         </Link>
         <Price p={p} />
-        <Button size="sm" block className="mt-auto" onClick={() => quickAdd(p, add, nav)}>Mua ngay</Button>
+        <Button size="sm" block className="mt-auto" onClick={() => nav(`/san-pham/${p.slug}`)}>Mua ngay</Button>
       </div>
     </article>
   );
@@ -99,7 +83,6 @@ export function ProductCardHome({ p, badge }) {
 export function ProductCardCat({ p }) {
   const nav = useNavigate();
   const { user } = useAuth();
-  const { add } = useCart();
   const off = p.compare_at_price > p.base_price ? Math.round((1 - p.base_price / p.compare_at_price) * 100) : 0;
 
   const wish = async (e) => {
@@ -140,7 +123,7 @@ export function ProductCardCat({ p }) {
         </Link>
         {p.rating_avg > 0 && <Stars value={p.rating_avg} count={p.rating_count} />}
         <Price p={p} className="mt-auto" />
-        <Button size="sm" block onClick={() => quickAdd(p, add, nav)}>Mua ngay</Button>
+        <Button size="sm" block onClick={() => nav(`/san-pham/${p.slug}`)}>Mua ngay</Button>
       </div>
     </article>
   );

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { api } from './api/client';
 import { useAuth } from './auth/AuthContext';
 import { Header, Footer } from './components/Layout';
-import { ToastRoot } from './components/Toast';
+import { ToastRoot } from './components/ui/toast';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';

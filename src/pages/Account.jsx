@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams, useLocation, Routes, Route } from 'react-router-dom';
 import { api, fmtVND, fmtDate, fileUrl, errMsg } from '../api/client';
-import { toast } from '../components/Toast';
+import { toast } from '../components/ui/toast';
 import { useAuth } from '../auth/AuthContext';
 import { Container } from '../components/Layout';
 import { Button } from '../components/ui/button';
@@ -91,7 +91,7 @@ function Shell() {
           <Link to="/" className="inline-flex items-center gap-1 text-[12.5px] text-slate-500 hover:text-brand-500">
             <i className="bi bi-chevron-left" aria-hidden="true" /> Về trang chủ
           </Link>
-          <h1 className="text-[20px] font-extrabold tracking-tight text-ink sm:text-[23px]">Tài khoản của tôi</h1>
+          <h1 className="text-[20px] font-bold tracking-tight text-ink sm:text-[23px]">Tài khoản của tôi</h1>
           <span className="hidden sm:block" />
         </div>
 
@@ -109,11 +109,11 @@ function Shell() {
               </div>
               <div className="grid grid-cols-2 border-b border-line">
                 <div className="px-2 py-3 text-center">
-                  <span className="block text-[16px] font-extrabold text-brand-500">{stats.count}</span>
+                  <span className="block text-[16px] font-bold text-brand-500">{stats.count}</span>
                   <span className="block text-[11px] text-slate-500">Đơn đã đặt</span>
                 </div>
                 <div className="border-l border-line px-2 py-3 text-center">
-                  <span className="block text-[16px] font-extrabold text-brand-500">
+                  <span className="block text-[16px] font-bold text-brand-500">
                     {fmtVND(stats.spent).replace('₫', '')}<small className="ml-0.5 text-[10px]">đ</small>
                   </span>
                   <span className="block text-[11px] text-slate-500">Tổng đã chi</span>
@@ -354,7 +354,7 @@ function MyOrders() {
                     <p className="mt-1 text-[12.5px] text-slate-500">Đặt lúc {fmtDate(o.created_at)}</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-3">
-                    <span className="text-[15px] font-extrabold text-price">{money(o.total_amount)}</span>
+                    <span className="text-[15px] font-bold text-price">{money(o.total_amount)}</span>
                     <Chip color={PAY_CHIP[o.payment_status] || 'default'}>{PAY_VI[o.payment_status] || o.payment_status}</Chip>
                     <i className="bi bi-chevron-right text-[12px] text-slate-300" aria-hidden="true" />
                   </div>
@@ -399,7 +399,7 @@ function OrderDetail() {
             <i className="bi bi-chevron-left" aria-hidden="true" /> Về danh sách đơn
           </Link>
           <div className="mt-2 flex flex-wrap items-center gap-3">
-            <h2 className="text-[19px] font-extrabold tracking-tight text-ink">{o.order_number}</h2>
+            <h2 className="text-[19px] font-bold tracking-tight text-ink">{o.order_number}</h2>
             <Chip color={ORDER_CHIP[o.status] || 'default'}>{VI_ORDER[o.status]}</Chip>
           </div>
           <p className="mt-1 text-[12.5px] text-slate-500">Đặt lúc {fmtDate(o.created_at)}</p>
@@ -441,7 +441,7 @@ function OrderDetail() {
               <b className="text-slate-800">{Number(o.shipping_fee) > 0 ? money(o.shipping_fee) : 'Miễn phí'}</b>
             </div>
             <div className="mt-1.5 flex items-baseline justify-between border-t border-line pt-2.5 text-[15.5px] font-bold text-ink">
-              <span>Tổng cộng</span><span className="text-[18px] font-extrabold text-price">{money(o.total_amount)}</span>
+              <span>Tổng cộng</span><span className="text-[18px] font-bold text-price">{money(o.total_amount)}</span>
             </div>
           </div>
         </CardContent>

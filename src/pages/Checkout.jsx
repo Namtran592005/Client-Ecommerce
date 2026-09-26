@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { api, fmtVND } from '../api/client';
 import { useCart } from '../cart/CartContext';
 import { useAuth } from '../auth/AuthContext';
-import { toast } from '../components/Toast';
+import { toast } from '../components/ui/toast';
 import { Container } from '../components/Layout';
 import { Button } from '../components/ui/button';
 import { Input, Select, Checkbox, Field } from '../components/ui/input';
@@ -126,7 +126,7 @@ export default function Checkout() {
     <main className="pb-10">
       <Container>
         <Crumb items={[{ label: 'Trang chủ', to: '/' }, { label: 'Giỏ hàng', to: '/gio-hang' }, { label: 'Thanh toán' }]} />
-        <h1 className="pb-4 text-[22px] font-extrabold tracking-tight text-ink sm:text-[26px]">Thanh toán</h1>
+        <h1 className="pb-4 text-[22px] font-bold tracking-tight text-ink sm:text-[26px]">Thanh toán</h1>
 
         <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
           <div className="grid gap-6">
@@ -241,7 +241,7 @@ export default function Checkout() {
 
               <div className="flex items-baseline justify-between border-t border-line pt-3">
                 <span className="text-[14px] font-semibold text-slate-700">Tổng cộng</span>
-                <span className="text-[20px] font-extrabold text-price">{money(total)}</span>
+                <span className="text-[20px] font-bold text-price">{money(total)}</span>
               </div>
 
               <Button size="lg" block onClick={submit} disabled={placing}>
@@ -265,7 +265,7 @@ export function CheckoutSuccess() {
           <span className="mx-auto grid size-16 place-items-center rounded-full bg-emerald-50 text-3xl text-emerald-600">
             <i className="bi bi-check-lg" aria-hidden="true" />
           </span>
-          <h1 className="mt-4 text-[21px] font-extrabold text-ink">Đặt hàng thành công</h1>
+          <h1 className="mt-4 text-[21px] font-bold text-ink">Đặt hàng thành công</h1>
           {orderNo && <p className="mt-1 text-[13.5px] text-slate-600">Mã đơn <b className="text-brand-600">{orderNo}</b></p>}
           {total ? <p className="text-[13.5px] text-slate-600">Tổng thanh toán {money(total)}</p> : null}
           <p className="mt-1 text-[13px] text-slate-500">Shop sẽ liên hệ xác nhận và giao hàng sớm nhất.</p>

@@ -207,7 +207,7 @@ export default function Shop() {
       <Container>
         <Crumb title={pageTitle} />
         <div className="pb-4">
-          <h1 className="text-[22px] font-extrabold tracking-tight text-ink sm:text-[26px]">{pageTitle}</h1>
+          <h1 className="text-[22px] font-bold tracking-tight text-ink sm:text-[26px]">{pageTitle}</h1>
           <p className="mt-0.5 text-[13px] text-slate-500">{pg.total} sản phẩm</p>
         </div>
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api, fmtVND, errMsg } from '../api/client';
-import { toast } from '../components/Toast';
+import { toast } from '../components/ui/toast';
 import { Container } from '../components/Layout';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -47,7 +47,7 @@ export default function Promo() {
         </nav>
 
         <div className="pb-5">
-          <h1 className="text-[22px] font-extrabold tracking-tight text-ink sm:text-[26px]">Ưu đãi đặc biệt</h1>
+          <h1 className="text-[22px] font-bold tracking-tight text-ink sm:text-[26px]">Ưu đãi đặc biệt</h1>
           <p className="mt-0.5 text-[13px] text-slate-500">Săn mã giảm giá mỗi ngày — áp dụng ở giỏ hàng</p>
         </div>
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import { toast } from '../components/Toast';
+import { toast } from '../components/ui/toast';
 import { Container } from '../components/Layout';
 import { Button } from '../components/ui/button';
 import { Input, Field } from '../components/ui/input';
@@ -12,7 +12,7 @@ function Shell({ title, sub, children, footer }) {
       <Container className="pt-8 sm:pt-12">
         <div className="mx-auto max-w-[420px]">
           <div className="rounded-xl border border-line bg-white p-5 shadow-card sm:p-6">
-            <h1 className="text-center text-[20px] font-extrabold tracking-tight text-ink">{title}</h1>
+            <h1 className="text-center text-[20px] font-bold tracking-tight text-ink">{title}</h1>
             {sub && <p className="mt-1 text-center text-[13px] text-slate-500">{sub}</p>}
             <div className="mt-5">{children}</div>
           </div>

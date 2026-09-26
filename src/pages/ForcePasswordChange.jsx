@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
-import { toast } from '../components/Toast';
+import { toast } from '../components/ui/toast';
 import { Button } from '../components/ui/button';
 import { Input, Field } from '../components/ui/input';
 import { Container } from '../components/Layout';
@@ -37,7 +37,7 @@ export default function ForcePasswordChange() {
               <i className="bi bi-shield-exclamation" aria-hidden="true" />
             </span>
             <div>
-              <h1 className="text-[19px] font-extrabold tracking-tight text-ink">Đổi mật khẩu</h1>
+              <h1 className="text-[19px] font-bold tracking-tight text-ink">Đổi mật khẩu</h1>
               <p className="mt-1 text-[13px] leading-relaxed text-slate-600">
                 Tài khoản <b className="break-all text-ink">{user?.email || user?.phone}</b> đang dùng
                 mật khẩu tạm thời. Hãy đặt mật khẩu riêng trước khi tiếp tục.

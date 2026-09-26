@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { api, fmtVND, fileUrl, errMsg } from '../api/client';
 import { useCart } from '../cart/CartContext';
 import { useAuth } from '../auth/AuthContext';
-import { toast } from '../components/Toast';
+import { toast } from '../components/ui/toast';
 import { ProductCardCat } from '../components/Shop';
 import { Container } from '../components/Layout';
 import { Button } from '../components/ui/button';
@@ -168,7 +168,7 @@ export default function ProductDetail() {
           </div>
 
           <div className="flex flex-col gap-3.5">
-            <h1 className="text-[21px] font-extrabold leading-snug tracking-tight text-ink sm:text-[25px]">{p.name}</h1>
+            <h1 className="text-[21px] font-bold leading-snug tracking-tight text-ink sm:text-[25px]">{p.name}</h1>
 
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12.5px] text-slate-500">
               <span><strong className="text-slate-700">SKU:</strong> {variant?.sku || p.sku || '—'}</span>
@@ -184,7 +184,7 @@ export default function ProductDetail() {
             </div>
 
             <div className="flex flex-wrap items-baseline gap-2.5 rounded-xl bg-price-soft px-4 py-3">
-              <span className="text-[26px] font-extrabold text-price">
+              <span className="text-[26px] font-bold text-price">
                 {fmtVND(price).replace('₫', '')}<small className="ml-0.5 text-[13px]">VND</small>
               </span>
               {p.compare_at_price > price && (
@@ -407,7 +407,7 @@ export default function ProductDetail() {
       )}
 
       <div className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-line bg-white/95 px-4 py-2.5 backdrop-blur lg:hidden">
-        <span className="text-[15px] font-extrabold text-price">
+        <span className="text-[15px] font-bold text-price">
           {fmtVND(price).replace('₫', '')}<small className="ml-0.5 text-[11px]">VND</small>
         </span>
         <Button variant="outline" block onClick={doAdd} disabled={!inStock}>Thêm vào giỏ</Button>

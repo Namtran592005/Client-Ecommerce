@@ -324,7 +324,7 @@ export function Footer() {
           </FooterCol>
         </div>
         <div className="mt-8 flex flex-col items-center justify-between gap-1 border-t border-line pt-4 text-[12px] text-slate-500 sm:flex-row">
-          <span>© 2026 UniMate Retail (Vietnam) Co., Ltd. All rights reserved.</span>
+          <span>© 2026 Công ty TNHH UniMate Retail (Việt Nam). Bảo lưu mọi quyền.</span>
           <span>Giao hàng toàn quốc · Đổi trả trong 7 ngày</span>
         </div>
       </Container>
