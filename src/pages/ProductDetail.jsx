@@ -107,7 +107,7 @@ export default function ProductDetail() {
     finally { setSending(false); }
   };
 
-  if (!p) return <Container className="py-16 text-center text-slate-500">Đang tải...</Container>;
+  if (!p) return null;
 
   const imgs = (p.images || []).map((im) => im.object_key ? fileUrl(im.object_key) : '').filter(Boolean);
   imgCount.current = Math.max(1, imgs.length);

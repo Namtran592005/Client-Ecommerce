@@ -33,6 +33,8 @@ export default function Shop() {
   const [sp, setSp] = useSearchParams();
   const loc = useLocation();
   const [rows, setRows] = useState([]);
+  // Chỉ hiện "không tìm thấy" sau khi đã tải xong, tránh thông báo nhảy ra rồi mất.
+  const [loaded, setLoaded] = useState(false);
   const [pg, setPg] = useState({ page: 1, limit: 20, total: 0, totalPages: 1 });
   const [cats, setCats] = useState([]);
   const [brands, setBrands] = useState([]);
@@ -81,14 +83,17 @@ export default function Shop() {
     if (cat) params.category_id = cat;
     if (q) params.search = q;
     if (brand) params.brand_id = brand;
-    const { data } = await api.get('/products', { params });
-    let list = (data.data || []).filter((p) => p.base_price >= pMin && p.base_price <= pMax);
-    if (sort === 'gia-tang') list = [...list].sort((a, b) => a.base_price - b.base_price);
-    if (sort === 'gia-giam') list = [...list].sort((a, b) => b.base_price - a.base_price);
-    if (sort === 'ten-az') list = [...list].sort((a, b) => a.name.localeCompare(b.name, 'vi'));
-    if (sort === 'ten-za') list = [...list].sort((a, b) => b.name.localeCompare(a.name, 'vi'));
-    setRows(list);
-    setPg(data.pagination);
+    try {
+      const { data } = await api.get('/products', { params });
+      let list = (data.data || []).filter((p) => p.base_price >= pMin && p.base_price <= pMax);
+      if (sort === 'gia-tang') list = [...list].sort((a, b) => a.base_price - b.base_price);
+      if (sort === 'gia-giam') list = [...list].sort((a, b) => b.base_price - a.base_price);
+      if (sort === 'ten-az') list = [...list].sort((a, b) => a.name.localeCompare(b.name, 'vi'));
+      if (sort === 'ten-za') list = [...list].sort((a, b) => b.name.localeCompare(a.name, 'vi'));
+      setRows(list);
+      setPg(data.pagination);
+    } catch { /* giữ nguyên lần trước */ }
+    finally { setLoaded(true); }
   };
 
   useEffect(() => {
@@ -267,7 +272,7 @@ export default function Shop() {
               {rows.map((p, i) => <ProductCardCat key={p.id} p={p} priority={i < 8} />)}
             </div>
 
-            {!rows.length && (
+            {loaded && !rows.length && (
               <Empty icon="bi-search" title="Không tìm thấy sản phẩm" desc="Thử bỏ bớt bộ lọc hoặc tìm với từ khoá khác." />
             )}
 

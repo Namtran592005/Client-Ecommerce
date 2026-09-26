@@ -11,12 +11,14 @@ const money = (n) => `${fmtVND(n).replace('₫', '')}VND`;
 
 export default function Promo() {
   const [promos, setPromos] = useState([]);
+  // Chỉ hiện "chưa có chương trình" sau khi đã tải xong, tránh nhảy ra rồi mất.
+  const [promosLoaded, setPromosLoaded] = useState(false);
   const [code, setCode] = useState('');
   const [res, setRes] = useState(null);
   const [checking, setChecking] = useState(false);
 
   useEffect(() => {
-    api.get('/promos/promotions').then((r) => setPromos(r.data)).catch(() => {});
+    api.get('/promos/promotions').then((r) => setPromos(r.data)).catch(() => {}).finally(() => setPromosLoaded(true));
   }, []);
 
   const copy = async (c) => {
@@ -51,7 +53,7 @@ export default function Promo() {
           <p className="mt-0.5 text-[13px] text-slate-500">Săn mã giảm giá mỗi ngày — áp dụng ở giỏ hàng</p>
         </div>
 
-        {promos.length === 0 ? (
+        {promosLoaded && promos.length === 0 ? (
           <Empty icon="bi-ticket-perforated" title="Chưa có chương trình nào" desc="Quay lại sau nhé, UniMate thường xuyên có ưu đãi." />
         ) : (
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

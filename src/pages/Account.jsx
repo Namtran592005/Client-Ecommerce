@@ -353,7 +353,7 @@ function MyOrders() {
     return o.status === filter;
   });
 
-  if (!rows) return <Card><CardContent className="pt-5"><p className="text-slate-500">Đang tải...</p></CardContent></Card>;
+  if (!rows) return null;
 
   return (
     <Card>
@@ -429,7 +429,7 @@ function OrderDetail() {
   };
 
   if (err) return <Card><CardContent className="pt-5"><Empty icon="bi-exclamation-circle" title="Không tải được đơn" desc={err} /></CardContent></Card>;
-  if (!o) return <Card><CardContent className="pt-5"><p className="text-slate-500">Đang tải...</p></CardContent></Card>;
+  if (!o) return null;
 
   const ship = o.addresses.find((a) => a.address_type === 'shipping');
   const canCancel = ['pending', 'confirmed'].includes(o.status);
@@ -591,7 +591,7 @@ function Addresses() {
         <p className="text-[13px] text-slate-500">Dùng để điền nhanh khi đặt hàng.</p>
       </CardHeader>
       <CardContent className="pt-4">
-        {rows === null ? <p className="text-slate-500">Đang tải...</p>
+        {rows === null ? null
           : rows.length === 0 ? <Empty icon="bi-geo-alt" title="Chưa có địa chỉ nào" desc="Thêm địa chỉ bên dưới để thanh toán nhanh hơn." />
             : (
               <ul className="mb-5 grid gap-2.5">
@@ -655,7 +655,7 @@ function Wishlist() {
     catch (err) { toast.error(errMsg(err)); }
   };
 
-  if (!wl) return <Card><CardContent className="pt-5"><p className="text-slate-500">Đang tải...</p></CardContent></Card>;
+  if (!wl) return null;
   const items = wl.items || [];
 
   return (
@@ -707,7 +707,7 @@ function Wishlist() {
 
 export default function Account() {
   const { user, ready } = useAuth();
-  if (!ready) return <main className="pb-10"><Container className="py-12 text-center text-slate-500">Đang tải...</Container></main>;
+  if (!ready) return null;
   if (!user) {
     return (
       <main className="pb-10">

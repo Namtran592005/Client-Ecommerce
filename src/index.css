@@ -85,5 +85,28 @@ input[type="search"]::-webkit-search-results-button {
 .hscroll::-webkit-scrollbar { display: none; }
 .hscroll > * { scroll-snap-align: start; }
 
+/* Nền tảng cho hiệu ứng chuyển trang: trang mới mờ dần vào đè lên trang cũ
+   đang mờ đi, nên không thấy khoảng trống hay nội dung giật lên. */
+@keyframes pageIn {
+  from { opacity: 0; transform: translate3d(0, 6px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes pageOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+.page-in  { animation: pageIn .26s cubic-bezier(.22,.61,.36,1) both; }
+.page-out { animation: pageOut .18s ease-in both; }
+
+/* Ai bật "giảm chuyển động" thì hiện nội dung luôn, không mờ dần. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .page-in, .page-out { animation: none; }
+}
+
+@media print {
+  .page-in, .page-out { animation: none; }
+}
+
 /* Lưới con không được phình track: tránh tràn ngang */
 .grid > * { min-width: 0; }

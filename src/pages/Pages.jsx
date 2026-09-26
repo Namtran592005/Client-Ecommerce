@@ -68,7 +68,7 @@ export function PolicyPage({ slug }) {
           <Card>
             <CardContent className="p-4 sm:p-5">
               {!ready ? (
-                <p className="text-[13.5px] text-slate-500">Đang tải nội dung...</p>
+                null
               ) : (doc?.sections || []).length === 0 ? (
                 <Empty title="Nội dung đang được cập nhật" desc="Quay lại sau ít phút." />
               ) : (
@@ -155,7 +155,7 @@ export function AboutPage() {
           {about.heading || 'Giới thiệu UniMate'}
         </h1>
         {!ready ? (
-          <p className="mt-4 text-[13.5px] text-slate-500">Đang tải nội dung...</p>
+          null
         ) : (
           <div className="mt-4 grid gap-3">
             {about.intro && (

@@ -1,17 +1,20 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import { cn } from '../../lib/utils';
 
+const linkCls = 'shrink-0 text-[13px] font-semibold text-brand-500 hover:text-brand-700 hover:underline';
+
+// Đường dẫn nội bộ phải đi qua react-router. Dùng thẻ <a href> sẽ tải lại
+// toàn bộ trang, mất hết hiệu ứng chuyển trang và hiện lại từ đầu.
 export const SectionHead = ({ title, sub, to, more = 'Xem tất cả' }) => (
   <div className="mb-3 flex items-end justify-between gap-3">
     <div>
       <h2 className="text-[17px] font-bold tracking-tight text-ink sm:text-[19px]">{title}</h2>
       {sub && <p className="mt-0.5 text-[13px] text-slate-500">{sub}</p>}
     </div>
-    {to && (
-      <a href={to} className="shrink-0 text-[13px] font-semibold text-brand-500 hover:text-brand-700 hover:underline">
-        {more} <span aria-hidden="true">›</span>
-      </a>
-    )}
+    {to && (/^https?:\/\//.test(to)
+      ? <a href={to} className={linkCls} target="_blank" rel="noreferrer">{more} <span aria-hidden="true">›</span></a>
+      : <Link to={to} className={linkCls}>{more} <span aria-hidden="true">›</span></Link>)}
   </div>
 );
 
