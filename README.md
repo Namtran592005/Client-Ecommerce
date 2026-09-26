@@ -1,59 +1,80 @@
-# UniMate Client — Web Bán Hàng Cho Khách
+# UniMate Client — Web bán hàng
 
-![UniMate](public/logo-light.png)
+React 19 + Vite. Giao diện cửa hàng cho khách: xem sản phẩm, lọc theo danh mục,
+thêm vào giỏ, đặt hàng, quản lý tài khoản. Tiếng Việt, responsive, góc vuông.
 
-Giao diện cửa hàng online cho khách mua sắm, dựng theo **đúng design system mẫu gốc**
-(`client/template/*.html`): header xanh + drawer + lightbox tìm kiếm, banner slider,
-danh mục cuộn ngang, thẻ sản phẩm, sidebar lọc + slider giá, trang chi tiết
-(gallery, tabs, sticky mua nhanh mobile), footer — chỉ đổi màu đỏ `#80001c`
-sang **xanh logo** (`#0b3d9e`). Slide trang chủ lấy ảnh thật từ banner admin
-(slide chỉ nhận banner đang bật **và có ảnh**, sắp theo thứ tự admin đặt; nếu không
-còn banner nào thì ẩn luôn khối slide thay vì hiện ô màu trống), catalog nhỏ 8 ô/hàng,
-tiêu đề trang theo đúng tên danh mục đang xem, bấm ảnh sản phẩm ra thẳng chi tiết.
-Tiếng Việt, responsive đầy đủ.
-
-## Có gì cho khách
-
-| Trang | Chức năng |
-|---|---|
-| Trang chủ `/` | Banner sale (tự chạy, có nút trước/sau), danh mục, gợi ý hôm nay, ưu đãi |
-| Sản phẩm `/san-pham`, `/tim-kiem` | Lọc danh mục/thương hiệu, tìm kiếm, sắp xếp giá, phân trang |
-| Chi tiết `/san-pham/:slug` | Ảnh + zoom, chọn phân loại (màu/size), tồn thật, đánh giá + viết đánh giá, hàng liên quan |
-| Giỏ hàng `/gio-hang` | Tăng/giảm/xóa, thử mã giảm giá, tạm tính real-time (khách vãng lai vẫn mua được) |
-| Đặt hàng `/thanh-toan` | Địa chỉ (tự điền nếu đã lưu), ship, COD/chuyển khoản/ví, chốt đơn |
-| Tài khoản `/dang-nhap`, `/dang-ky` | Đăng ký/đăng nhập, tự giữ phiên khi F5 |
-| Tài khoản `/tai-khoan/*` | Hồ sơ, đơn mua + hủy đơn, sổ địa chỉ, yêu thích |
-| Khuyến mãi `/khuyen-mai` | Xem + chép mã, kiểm tra mã |
+Chạy kèm backend ([../backend](../backend)) và trang quản trị ([../admin](../admin))
+trong cùng một stack Docker.
 
 ## Chạy
+
+Cách nhanh nhất — dựng cả stack (xem [`../backend/README.md`](../backend/README.md)):
+
+```powershell
+cd ..\backend
+docker compose --env-file .env.docker up -d --build
+```
+
+Mở <http://127.0.0.1:8081>. Đăng nhập thử `an@example.com` / `Khach123!`.
+
+Chạy riêng để phát triển:
+
 ```powershell
 npm install
-Copy-Item .env.example .env   # sửa VITE_API_BASE nếu API ở máy khác
-npm run dev                   # mở http://localhost:5174
-npm run build                 # đóng gói dist/ để deploy tĩnh
+Copy-Item .env.example .env    # sửa VITE_API_BASE nếu API ở máy khác
+npm run dev                    # http://localhost:5174
+npm run build                  # đóng gói dist/ để deploy tĩnh
 ```
-Mặc định gọi API Docker local (`http://127.0.0.1:3000/api`, đã cho phép CORS).
 
-Triển khai cùng stack Docker có sẵn (`CLIENT_DOMAIN`, `CLIENT_API_BASE`,
-`CLIENT_FILES_BASE` trong `backend/.env.docker` → `up -d --build client`).
-Test nội bộ: http://127.0.0.1:8081. Đổi API base phải build lại image.
+| Biến môi trường | Ý nghĩa |
+|---|---|
+| `VITE_API_BASE` | Địa chỉ API, kèm `/api` |
+| `VITE_FILES_BASE` | URL công khai của file media (khớp `S3_PUBLIC_URL` backend) |
 
-## Cấu trúc (cho dev bảo trì)
+Đổi 2 biến này trong `.env.docker` (`CLIENT_API_BASE`, `CLIENT_FILES_BASE`) thì phải
+build lại image — biến được nướng vào lúc build.
+
+## Trang
+
+| Đường dẫn | Nội dung |
+|---|---|
+| `/` | Banner khuyến mãi, danh mục, gợi ý hôm nay, ưu đãi |
+| `/san-pham`, `/tim-kiem` | Lọc danh mục và thương hiệu, sắp xếp giá, phân trang |
+| `/san-pham/:slug` | Ảnh và xem lớn, chọn phân loại, tồn kho thật, đánh giá, hàng liên quan |
+| `/gio-hang` | Tăng giảm xoá, mã giảm giá, tạm tính |
+| `/thanh-toan` | Địa chỉ, vận chuyển, phương thức thanh toán, chốt đơn |
+| `/dat-hang-thanh-cong/:id` | Trang cảm ơn sau khi đặt |
+| `/dang-nhap`, `/dang-ky` | Đăng nhập và đăng ký |
+| `/tai-khoan/*` | Hồ sơ, đơn mua, sổ địa chỉ, yêu thích |
+| `/khuyen-mai` | Xem và kiểm tra mã giảm giá |
+
+Khách chưa đăng nhập vẫn mua được: giỏ lưu theo `session_id` trong trình duyệt và
+tự gộp vào tài khoản ngay khi đăng nhập.
+
+## Cấu trúc
+
 ```
 src/
-├── api/client.js   # gọi API, tiền/ngày tiếng Việt, giỏ vãng lai (session_id)
-├── auth/           # đăng nhập/đăng ký, giữ phiên khi F5
-├── cart/           # giỏ hàng dùng chung + badge số lượng
-├── components/     # Layout.jsx (header/footer/nav mobile), Shop.jsx (thẻ SP, phân trang),
-│                   # HeroSlider.jsx (slide banner), Toast.jsx (thông báo kiểu pill tối)
-├── pages/          # Home, Shop, ProductDetail, Cart, Checkout,
-│                   # Auth (login/register), Account (5 tab), Promo
-└── theme.css       # màu thương hiệu xanh logo (#0b3d9e) + cam (#f59e0b), responsive
+├── api/client.js      gọi API, định dạng tiền/ngày, quản lý session giỏ
+├── auth/              đăng nhập/đăng ký, giữ phiên khi F5
+├── cart/              giỏ hàng dùng chung + badge số lượng trên giỏ
+├── components/
+│   ├── Layout.jsx     header, footer, menu trượt
+│   ├── HeroSlider.jsx slide banner trang chủ
+│   ├── Shop.jsx       thẻ sản phẩm, thanh cuộn ngang, phân trang
+│   └── Toast.jsx      thông báo kiểu pill
+├── pages/             Home, Shop, ProductDetail, Cart, Checkout, Auth, Account, Promo
+└── theme.css          màu thương hiệu và toàn bộ responsive
 ```
-Slide banner ở `components/HeroSlider.jsx` dùng **Carousel chuẩn của Bootstrap** (đúng cấu trúc
-`.carousel > .carousel-inner > .carousel-item`, nút điều khiển và chấm điểm dùng `data-bs-*`).
-React chỉ tạo/huỷ đúng một instance `Carousel` theo vòng đời component và **không tự cập nhật
-class `active`** — Bootstrap tự lo, nên chấm điểm, nút trước/sau và vòng lặp không bị lệch.
-Banner luôn giữ tỉ lệ **16:9**; dùng `<picture>` để đổi sang ảnh `mobile_image_media_id`
-mà admin chọn trên màn hình nhỏ, nhờ vậy chữ trên banner không bị cắt ở điện thoại.
-API backend xem tại `backend/docs/API.md`.
+
+Màu: xanh `#0b3d9e` (nút chính), cam `#f59e0b` (giá sale), đỏ `#dc2626` (giá bán).
+Toàn bộ giao diện bo góc 0 — khai báo ở cuối `theme.css` để thắng mọi mặc định của
+Bootstrap.
+
+Slide banner dùng **Carousel của Bootstrap** với đúng cấu trúc
+`.carousel > .carousel-inner > .carousel-item` và các thuộc tính `data-bs-*`. React
+chỉ tạo rồi huỷ đúng một instance theo vòng đời component, không tự cập nhật class
+`active` — nhờ vậy chấm điểm, nút trước/sau và vòng lặp không bị lệch. Banner giữ tỉ
+lệ 16:9, dùng `<picture>` để đổi sang ảnh mobile mà admin chọn.
+
+Danh sách endpoint: [`../backend/docs/API.md`](../backend/docs/API.md).
