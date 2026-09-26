@@ -180,11 +180,11 @@ export default function Checkout() {
                         disabled={off}
                         onChange={() => setPayCode(m.code)}
                       />
-                      <span className={`flex h-12 w-[120px] shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-white px-2 ${on ? 'border-brand-200' : 'border-line/70'}`}>
+                      <span className={`flex h-10 w-[104px] shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-white px-2 ${on ? 'border-brand-200' : 'border-line/70'}`}>
                         {m.logo_url ? (
-                          <img src={m.logo_url} alt="" className="max-h-9 max-w-full object-contain" />
+                          <img src={m.logo_url} alt="" className="max-h-6 max-w-full object-contain" />
                         ) : (
-                          <i className={`bi ${meta.icon || 'bi-wallet2'} text-[18px] text-brand-500`} aria-hidden="true" />
+                          <i className={`bi ${meta.icon || 'bi-wallet2'} text-[16px] text-brand-500`} aria-hidden="true" />
                         )}
                       </span>
                       <span className="min-w-0">

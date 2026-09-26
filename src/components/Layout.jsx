@@ -304,9 +304,8 @@ export function Footer() {
             <FooterLink to="/gioi-thieu">Danh sách cửa hàng</FooterLink>
           </FooterCol>
         </div>
-        <div className="mt-8 flex flex-col items-center justify-between gap-1 border-t border-line pt-4 text-[12px] text-slate-500 sm:flex-row">
+        <div className="mt-8 border-t border-line pt-4 text-[12px] text-slate-500">
           <span>© 2026 Công ty TNHH UniMate Retail (Việt Nam). Bảo lưu mọi quyền.</span>
-          <span>Giao hàng toàn quốc · Đổi trả trong 7 ngày</span>
         </div>
       </Container>
     </footer>
