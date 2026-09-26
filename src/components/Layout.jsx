@@ -270,16 +270,16 @@ export function Footer() {
             <img src="/logo/logo-light.png" alt="UniMate" className="h-10" />
             <div className="mt-4 flex gap-2.5">
               {[
-                ['bi-facebook', 'Facebook'], ['bi-instagram', 'Instagram'],
-                ['bi-tiktok', 'Tiktok'], ['bi-chat-dots', 'Zalo'],
+                ['/brand/facebook.svg', 'Facebook'], ['/brand/instagram.svg', 'Instagram'],
+                ['/brand/tiktok.svg', 'TikTok'], ['/brand/zalo.svg', 'Zalo'],
               ].map(([icon, label]) => (
                 <a
                   key={label}
                   href="#"
                   aria-label={label}
-                  className="grid size-9 place-items-center rounded-lg bg-mist text-slate-500 transition-colors hover:bg-brand-50 hover:text-brand-500"
+                  className="grid size-9 place-items-center rounded-lg bg-mist transition-colors hover:bg-brand-50"
                 >
-                  <i className={`bi ${icon}`} aria-hidden="true" />
+                  <img src={icon} alt="" className="size-[18px] object-contain" loading="lazy" />
                 </a>
               ))}
             </div>

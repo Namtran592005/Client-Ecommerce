@@ -249,9 +249,9 @@ export default function ProductDetail() {
                 type="button"
                 aria-label="Chia sẻ Facebook"
                 onClick={() => window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href))}
-                className="grid size-8 place-items-center rounded-lg bg-mist transition-colors hover:bg-brand-50 hover:text-brand-500"
+                className="grid size-8 place-items-center rounded-lg bg-mist transition-colors hover:bg-brand-50"
               >
-                <i className="bi bi-facebook" aria-hidden="true" />
+                <img src="/brand/facebook.svg" alt="" className="size-4 object-contain" loading="lazy" />
               </button>
               <button
                 type="button"
