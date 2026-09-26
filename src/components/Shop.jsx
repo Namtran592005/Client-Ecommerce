@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext';
 import { toast } from './ui/toast';
 import { Button } from './ui/button';
 import { Stars } from './ui/misc';
+import { cn } from '../lib/utils';
 
 export function imgOf(p, i = 0) {
   const imgs = p.images || [];
@@ -60,7 +61,7 @@ export function ProductCardHome({ p, badge }) {
     <article className="product-card flex h-full flex-col overflow-hidden rounded-xl border border-line bg-white shadow-card transition-shadow hover:shadow-pop">
       <Thumb p={p}>
         {badge && (
-          <span className="absolute top-2 left-2 rounded-md bg-accent-500 px-1.5 py-0.5 text-[10.5px] font-bold text-brand-900">
+          <span className="absolute top-2 left-2 rounded-md bg-price px-1.5 py-0.5 text-[10.5px] font-semibold text-white">
             {badge}
           </span>
         )}
@@ -103,7 +104,7 @@ export function ProductCardCat({ p }) {
         {off > 0 ? (
           <span className="absolute top-2 left-2 rounded-md bg-price px-1.5 py-0.5 text-[10.5px] font-bold text-white">-{off}%</span>
         ) : (
-          <span className="absolute top-2 left-2 rounded-md bg-accent-500 px-1.5 py-0.5 text-[10.5px] font-bold text-brand-900">Mới</span>
+          <span className="absolute top-2 left-2 rounded-md bg-price px-1.5 py-0.5 text-[10.5px] font-semibold text-white">Mới</span>
         )}
         <button
           type="button"
@@ -133,7 +134,8 @@ export function Pager({ page, totalPages, onChange }) {
   if (totalPages <= 1) return null;
   const nums = [];
   for (let n = Math.max(1, page - 2); n <= Math.min(totalPages, page + 2); n++) nums.push(n);
-  const btn = 'grid size-9 place-items-center rounded-lg border border-slate-200 bg-white text-sm text-slate-600 transition-colors hover:border-brand-500 hover:text-brand-500 disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600';
+  const btn = 'grid size-9 place-items-center rounded-lg border border-line bg-white text-[13.5px] font-medium text-slate-600 transition-colors hover:border-brand-200 hover:bg-brand-50 hover:text-brand-600 disabled:pointer-events-none disabled:opacity-40 disabled:hover:border-line disabled:hover:bg-white disabled:hover:text-slate-600';
+  const btnOn = 'border-brand-500 bg-brand-500 font-semibold text-white hover:border-brand-600 hover:bg-brand-600 hover:text-white';
   return (
     <nav className="mt-6 flex flex-wrap items-center justify-center gap-1.5" aria-label="Phân trang">
       <button className={btn} disabled={page <= 1} onClick={() => onChange(page - 1)} aria-label="Trang trước">‹</button>
@@ -142,7 +144,7 @@ export function Pager({ page, totalPages, onChange }) {
         <button
           key={n}
           aria-current={n === page ? 'page' : undefined}
-          className={`${btn} ${n === page ? 'border-brand-500 bg-brand-500 font-bold text-white hover:text-white' : ''}`}
+          className={cn(btn, n === page && btnOn)}
           onClick={() => onChange(n)}
         >
           {n}

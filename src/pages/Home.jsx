@@ -53,22 +53,31 @@ function QuickCatalog({ cats }) {
           <Fade dir="left" show={qc.canPrev} />
           <Fade dir="right" show={qc.canNext} />
           <Arrow dir="left" show={qc.canPrev} onClick={qc.prev} label="Danh mục trước" />
-          <div ref={qc.trackRef} className="hscroll gap-2.5">
+          <div ref={qc.trackRef} className="hscroll gap-1 sm:gap-2.5">
             {cats.map((c) => (
               <Link
                 key={c.id}
                 to={`/san-pham?danh-muc=${c.id}`}
                 title={c.name}
-                className={`flex w-[76px] shrink-0 flex-col items-center gap-1.5 rounded-xl border border-line bg-white px-1.5 py-2.5 transition-colors hover:border-brand-500 hover:bg-brand-50 ${c.depth ? 'ml-5' : ''}`}
+                className={`group flex w-[60px] shrink-0 flex-col items-center gap-1.5 sm:w-[84px] ${c.depth ? 'ml-3 sm:ml-5' : ''}`}
               >
-                <span className="grid size-[52px] place-items-center overflow-hidden rounded-lg bg-mist">
+                <span className="block w-full overflow-hidden rounded-xl bg-mist transition-transform duration-200 group-hover:scale-105 group-focus-visible:scale-105">
                   {c.image_key ? (
-                    <img src={fileUrl(c.image_key)} alt="" loading="lazy" className="size-full object-cover" />
+                    <img
+                      src={fileUrl(c.image_key)}
+                      alt=""
+                      loading="lazy"
+                      className="aspect-square w-full object-cover"
+                    />
                   ) : (
-                    <span className="text-lg font-bold text-brand-500">{c.name[0]}</span>
+                    <span className="grid aspect-square w-full place-items-center text-lg font-bold text-brand-500">
+                      {c.name[0]}
+                    </span>
                   )}
                 </span>
-                <span className="line-clamp-2 w-full text-center text-[11px] font-medium leading-tight text-slate-600">{c.name}</span>
+                <span className="line-clamp-2 w-full text-center text-[11px] leading-tight text-slate-600 transition-colors group-hover:text-brand-600 sm:text-[11.5px]">
+                  {c.name}
+                </span>
               </Link>
             ))}
           </div>

@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { useCart } from '../cart/CartContext';
 import { api } from '../api/client';
+import SearchBox from './SearchBox';
 
 // Hook slider: nút mũi tên + kéo chuột
 export function useSlider() {
@@ -134,8 +135,7 @@ export function Header({ cats }) {
     return () => document.removeEventListener('keydown', esc);
   }, []);
 
-  const submitSearch = (e) => {
-    e.preventDefault();
+  const submitSearch = () => {
     setSearchBox(false);
     nav(q.trim() ? `/tim-kiem?q=${encodeURIComponent(q.trim())}` : '/san-pham');
   };
@@ -164,27 +164,7 @@ export function Header({ cats }) {
               <img src="/logo/logo-dark.png" alt="UniMate" className="h-7 sm:h-9" />
             </Link>
 
-            <form onSubmit={submitSearch} className="ml-auto hidden flex-1 items-center rounded-lg bg-white px-3 md:flex md:max-w-[560px] xl:max-w-[470px]">
-              <i className="bi bi-search shrink-0 text-slate-400" aria-hidden="true" />
-              <input
-                type="text"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Bạn đang muốn tìm kiếm gì?"
-                aria-label="Tìm kiếm sản phẩm"
-                className="h-9 w-full min-w-0 bg-transparent px-2 text-sm text-slate-800 outline-none placeholder:text-slate-400"
-              />
-              {q && (
-                <button
-                  type="button"
-                  onClick={() => setQ('')}
-                  aria-label="Xoá nội dung tìm kiếm"
-                  className="-mr-1 grid size-6 shrink-0 place-items-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
-                >
-                  <i className="bi bi-x-lg text-[11px] leading-none" aria-hidden="true" />
-                </button>
-              )}
-            </form>
+            <SearchBox value={q} onChange={setQ} onSubmit={submitSearch} />
 
             <div className="ml-auto flex items-center gap-0.5 md:ml-0 md:gap-1">
               <button
@@ -254,29 +234,8 @@ export function Header({ cats }) {
         className={`fixed inset-x-0 top-0 z-50 bg-white px-3 py-3 shadow-pop transition-transform duration-200 md:hidden ${searchBox ? 'translate-y-0' : '-translate-y-full'}`}
         aria-hidden={!searchBox}
       >
-        <form onSubmit={submitSearch} className="flex items-center gap-2">
-          <div className="flex flex-1 items-center rounded-lg border border-slate-200 bg-white px-3">
-            <i className="bi bi-search shrink-0 text-slate-400" aria-hidden="true" />
-            <input
-              type="text"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Bạn đang muốn tìm kiếm gì?"
-              aria-label="Tìm kiếm sản phẩm"
-              className="h-10 w-full min-w-0 bg-transparent px-2 text-sm outline-none"
-            />
-            {q && (
-              <button
-                type="button"
-                onClick={() => setQ('')}
-                aria-label="Xoá nội dung tìm kiếm"
-                className="-mr-1 grid size-6 shrink-0 place-items-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
-              >
-                <i className="bi bi-x-lg text-[11px] leading-none" aria-hidden="true" />
-              </button>
-            )}
-          </div>
-          <button type="submit" className="h-10 shrink-0 rounded-lg bg-brand-500 px-4 text-sm font-semibold text-white">Tìm</button>
+        <div className="flex items-center gap-2">
+          <SearchBox variant="panel" autoFocus value={q} onChange={setQ} onSubmit={submitSearch} />
           <button
             type="button"
             onClick={() => setSearchBox(false)}
@@ -285,7 +244,7 @@ export function Header({ cats }) {
           >
             <i className="bi bi-x-lg" aria-hidden="true" />
           </button>
-        </form>
+        </div>
       </div>
     </header>
   );
