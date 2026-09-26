@@ -1,10 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 
+// Icon thương hiệu lấy từ nguồn chuẩn, lưu trong public/brand:
+//   zalo.svg     - Simple Icons (màu #0068FF)
+//   messenger.svg- Font Awesome 6 Brands (màu #0084FF)
+//   phone.svg    - bi bi-telephone-fill
 const CHANNELS = [
-  { key: 'zalo', label: 'Zalo', icon: 'bi-chat-dots-fill', href: 'https://zalo.me/1900255579', tone: 'bg-[#0068ff]' },
-  { key: 'messenger', label: 'Messenger', icon: 'bi-messenger', href: 'https://m.me/unimate', tone: 'bg-[#0084ff]' },
-  { key: 'phone', label: 'Gọi 1900 255 579', icon: 'bi-telephone-fill', href: 'tel:1900255579', tone: 'bg-emerald-600' },
+  { key: 'zalo', label: 'Zalo', img: '/brand/zalo.svg', href: 'https://zalo.me/1900255579', tone: 'bg-white' },
+  { key: 'messenger', label: 'Messenger', img: '/brand/messenger.svg', href: 'https://m.me/unimate', tone: 'bg-white' },
+  { key: 'phone', label: 'Gọi 1900 255 579', img: '/brand/phone.svg', href: 'tel:1900255579', tone: 'bg-emerald-600 text-white' },
 ];
+
+const SIZE = 'size-11'; // 44px — nút chính và nút xổ ra cùng cỡ
 
 /** Nút liên hệ nổi góc dưới phải: bấm để mở Zalo / Messenger / Điện thoại. */
 export default function ContactFab() {
@@ -42,9 +48,9 @@ export default function ContactFab() {
                 rel="noreferrer"
                 aria-label={c.label}
                 onClick={() => setOpen(false)}
-                className={`grid size-11 place-items-center rounded-full text-white shadow-pop transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50 ${c.tone}`}
+                className={`grid ${SIZE} place-items-center rounded-full shadow-pop ring-1 ring-line transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50 ${c.tone}`}
               >
-                <i className={`bi ${c.icon} text-[18px] leading-none`} aria-hidden="true" />
+                <img src={c.img} alt="" className="size-6 object-contain" loading="lazy" />
               </a>
             </li>
           ))}
@@ -56,10 +62,12 @@ export default function ContactFab() {
         onClick={() => setOpen((o) => !o)}
         aria-label={open ? 'Đóng liên hệ' : 'Liên hệ'}
         aria-expanded={open}
-        className="grid size-13 place-items-center rounded-full bg-brand-600 text-white shadow-pop transition-all hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50 active:scale-95"
+        className={`grid ${SIZE} place-items-center rounded-full text-white shadow-pop transition-all hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50 active:scale-95 ${
+          open ? 'bg-brand-700' : 'bg-brand-600'
+        }`}
       >
         <i
-          className={`bi ${open ? 'bi-chevron-down' : 'bi-headset'} text-[22px] leading-none transition-transform`}
+          className={`bi ${open ? 'bi-chevron-down' : 'bi-headset'} text-[20px] leading-none transition-transform`}
           aria-hidden="true"
         />
       </button>
