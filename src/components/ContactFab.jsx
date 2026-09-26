@@ -3,11 +3,13 @@ import { useEffect, useRef, useState } from 'react';
 // Icon thương hiệu lấy từ nguồn chuẩn, lưu trong public/brand:
 //   zalo.svg     - Simple Icons (màu #0068FF)
 //   messenger.svg- Font Awesome 6 Brands (màu #0084FF)
+//   tammi.jpg    - logo chính thức lấy từ iTunes
 //   phone.svg    - bi bi-telephone-fill
 // Nền nút đều trắng để icon thương hiệu giữ đúng màu gốc.
 const CHANNELS = [
   { key: 'zalo', label: 'Zalo', img: '/brand/zalo.svg', href: 'https://zalo.me/1900255579' },
   { key: 'messenger', label: 'Messenger', img: '/brand/messenger.svg', href: 'https://m.me/unimate' },
+  { key: 'tammi', label: 'Tammi', img: '/brand/tammi.jpg', href: '#', imgClass: 'size-6 rounded-md' },
   { key: 'phone', label: 'Gọi 1900 255 579', img: '/brand/phone.svg', href: 'tel:1900255579' },
 ];
 
@@ -45,13 +47,17 @@ export default function ContactFab() {
               </span>
               <a
                 href={c.href}
-                target={c.key === 'phone' ? undefined : '_blank'}
+                target={c.href.startsWith('http') ? '_blank' : undefined}
                 rel="noreferrer"
                 aria-label={c.label}
-                onClick={() => setOpen(false)}
+                onClick={(e) => {
+                  setOpen(false);
+                  // Kênh chưa có URL thật: chặn hành vi mặc định để trang không nhảy.
+                  if (c.href === '#') e.preventDefault();
+                }}
                 className={`grid ${SIZE} place-items-center rounded-full bg-white shadow-pop ring-1 ring-line transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50`}
               >
-                <img src={c.img} alt="" className="size-6 object-contain" decoding="async" />
+                <img src={c.img} alt="" className={`size-6 object-contain ${c.imgClass || ''}`} decoding="async" />
               </a>
             </li>
           ))}

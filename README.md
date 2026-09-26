@@ -60,7 +60,7 @@ src/
 ├── cart/              giỏ hàng dùng chung + badge số lượng trên giỏ
 ├── components/
 │   ├── Layout.jsx     header, footer, menu trượt
-│   ├── HeroSlider.jsx slide banner trang chủ
+│   ├── HeroSlider.jsx slide banner trang chủ (ảnh hoặc video)
 │   ├── Shop.jsx       thẻ sản phẩm, thanh cuộn ngang, phân trang
 │   └── Toast.jsx      thông báo kiểu pill
 ├── pages/             Home, Shop, ProductDetail, Cart, Checkout, Auth, Account, Promo
@@ -71,10 +71,11 @@ Màu: xanh `#0b3d9e` (nút chính), cam `#f59e0b` (giá sale), đỏ `#dc2626` (
 Toàn bộ giao diện bo góc 0 — khai báo ở cuối `theme.css` để thắng mọi mặc định của
 Bootstrap.
 
-Slide banner dùng **Carousel của Bootstrap** với đúng cấu trúc
-`.carousel > .carousel-inner > .carousel-item` và các thuộc tính `data-bs-*`. React
-chỉ tạo rồi huỷ đúng một instance theo vòng đời component, không tự cập nhật class
-`active` — nhờ vậy chấm điểm, nút trước/sau và vòng lặp không bị lệch. Banner giữ tỉ
-lệ 16:9, dùng `<picture>` để đổi sang ảnh mobile mà admin chọn.
+Slide banner viết bằng React thuần: các slide xếp chồng, chuyển bằng `opacity` kèm
+`inert` cho slide không hiện nên chấm điểm, nút trước/sau và vòng lặp không bị lệch.
+Banner giữ tỉ lệ 16:9 và **dùng chung một media cho mọi màn hình** — không có bản
+riêng cho mobile. Nếu media đó là video (mp4/webm) thì nó tự chạy, không tiếng, lặp
+lại và không có nút điều khiển; chỉ slide đang hiện được phát, và không tự phát nếu
+hệ điều hành bật chế độ giảm chuyển động.
 
 Danh sách endpoint: [`../backend/docs/API.md`](../backend/docs/API.md).

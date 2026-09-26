@@ -117,8 +117,8 @@ export default function Home() {
     api.get('/banners').then(async (r) => {
       const list = (r.data || []).slice(0, 6);
       const resolved = await Promise.all(list.map(async (b) => {
-        const [url, mobileUrl] = await Promise.all([mediaUrl(b.image_media_id), mediaUrl(b.mobile_image_media_id)]);
-        return { ...b, url, mobileUrl };
+        const url = await mediaUrl(b.image_media_id);
+        return { ...b, url };
       }));
       setBanners(resolved.filter((b) => b.url));
     }).catch(() => {});

@@ -8,11 +8,19 @@ const bannerHref = (b) => {
   return '/san-pham';
 };
 
+// Mỗi banner dùng chung một media cho mọi màn hình. Nếu media là video thì
+// chạy tự động, không tiếng, lặp lại và không có nút điều khiển.
+const isVideo = (s) => (s.mime_type || '').startsWith('video/');
+
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
 export default function HeroSlider({ slides = [], interval = 5500 }) {
   const total = slides.length;
   const [index, setIndex] = useState(0);
   const timer = useRef(null);
   const touchX = useRef(null);
+  const rootRef = useRef(null);
 
   const go = useCallback((next) => {
     if (total < 2) return;
@@ -27,6 +35,22 @@ export default function HeroSlider({ slides = [], interval = 5500 }) {
 
   useEffect(() => { setIndex(0); }, [total]);
 
+  // Chỉ slide đang hiện được phát; slide khác dừng lại để không tốn băng thông.
+  // Người dùng bật "giảm chuyển động" thì không tự phát.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const auto = !prefersReducedMotion();
+    root.querySelectorAll('video[data-slide]').forEach((v) => {
+      if (Number(v.dataset.slide) === index && auto) {
+        const p = v.play();
+        if (p && typeof p.catch === 'function') p.catch(() => {});
+      } else {
+        v.pause();
+      }
+    });
+  }, [index, slides]);
+
   if (!total) return null;
 
   const onTouchStart = (e) => { touchX.current = e.touches[0].clientX; };
@@ -39,6 +63,7 @@ export default function HeroSlider({ slides = [], interval = 5500 }) {
 
   return (
     <section
+      ref={rootRef}
       className="relative w-full overflow-hidden bg-brand-50"
       aria-roledescription="carousel"
       aria-label="Banner khuyến mãi"
@@ -48,17 +73,29 @@ export default function HeroSlider({ slides = [], interval = 5500 }) {
       <div className="relative aspect-[16/9] w-full">
         {slides.map((s, i) => {
           const to = bannerHref(s);
-          const body = (
-            <picture>
-              {s.mobileUrl ? <source media="(max-width: 767px)" srcSet={s.mobileUrl} /> : null}
-              <img
-                className="block size-full object-cover"
-                src={s.url}
-                alt={s.alt_text || s.title || ''}
-                decoding="async"
-                fetchPriority={i === index ? 'high' : 'low'}
-              />
-            </picture>
+          const active = i === index;
+          const body = isVideo(s) ? (
+            <video
+              data-slide={i}
+              className="block size-full object-cover"
+              src={s.url}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload={active ? 'auto' : 'metadata'}
+              disablePictureInPicture
+              tabIndex={-1}
+              aria-hidden="true"
+            />
+          ) : (
+            <img
+              className="block size-full object-cover"
+              src={s.url}
+              alt={s.alt_text || s.title || ''}
+              decoding="async"
+              fetchPriority={active ? 'high' : 'low'}
+            />
           );
           return (
             <div
@@ -66,12 +103,12 @@ export default function HeroSlider({ slides = [], interval = 5500 }) {
               role="group"
               aria-roledescription="slide"
               aria-label={`${i + 1} / ${total}`}
-              inert={i !== index}
-              className={`absolute inset-0 transition-opacity duration-500 ${i === index ? 'z-10 opacity-100' : 'z-0 opacity-0'}`}
+              inert={!active}
+              className={`absolute inset-0 transition-opacity duration-500 ${active ? 'z-10 opacity-100' : 'z-0 opacity-0'}`}
             >
               {to.startsWith('http')
-                ? <a className="block size-full" href={to} target="_blank" rel="noreferrer" tabIndex={i === index ? 0 : -1}>{body}</a>
-                : <Link className="block size-full" to={to} tabIndex={i === index ? 0 : -1}>{body}</Link>}
+                ? <a className="block size-full" href={to} target="_blank" rel="noreferrer" tabIndex={active ? 0 : -1}>{body}</a>
+                : <Link className="block size-full" to={to} tabIndex={active ? 0 : -1}>{body}</Link>}
             </div>
           );
         })}
