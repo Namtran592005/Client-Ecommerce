@@ -74,7 +74,7 @@ function Burger({ onClick }) {
       type="button"
       onClick={onClick}
       aria-label="Mở menu"
-      className="grid size-9 shrink-0 place-items-center rounded-lg text-white transition-colors hover:bg-white/15 md:hidden"
+      className="grid size-9 shrink-0 place-items-center rounded-lg text-white transition-colors hover:bg-white/15"
     >
       <i className="bi bi-list text-[22px] leading-none" aria-hidden="true" />
     </button>
@@ -125,8 +125,7 @@ export function Header({ cats }) {
   }, []);
 
   useEffect(() => {
-    const narrow = window.matchMedia('(max-width: 767px)').matches;
-    document.body.style.overflow = (narrow && (drawer || searchBox)) ? 'hidden' : '';
+    document.body.style.overflow = (drawer || searchBox) ? 'hidden' : '';
   }, [drawer, searchBox]);
 
   useEffect(() => {
@@ -194,11 +193,11 @@ export function Header({ cats }) {
 
       <div
         onClick={() => setDrawer(false)}
-        className={`fixed inset-0 z-40 bg-black/45 transition-opacity duration-200 md:hidden ${drawer ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
+        className={`fixed inset-0 z-40 bg-black/45 transition-opacity duration-200 ${drawer ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
         aria-hidden="true"
       />
       <aside
-        className={`fixed top-0 left-0 z-50 flex h-full w-[300px] max-w-[86vw] flex-col bg-white shadow-pop transition-transform duration-200 md:hidden ${drawer ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed top-0 left-0 z-50 flex h-full w-[300px] max-w-[86vw] flex-col bg-white shadow-pop transition-transform duration-200 ${drawer ? 'translate-x-0' : '-translate-x-full'}`}
         aria-hidden={!drawer}
         aria-label="Menu điều hướng"
       >
