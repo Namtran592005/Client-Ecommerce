@@ -88,18 +88,30 @@ function QuickCatalog({ cats }) {
   );
 }
 
+const MAX_CATEGORY_ROWS = 4;
+
 export default function Home() {
   const [featured, setFeatured] = useState([]);
   const [best, setBest] = useState([]);
   const [cats, setCats] = useState([]);
   const [banners, setBanners] = useState([]);
+  const [rows, setRows] = useState([]);
 
   useEffect(() => {
     api.get('/products', { params: { limit: 10 } }).then((r) => {
       setFeatured(r.data.data.slice(0, 8));
       setBest([...r.data.data].reverse().slice(0, 8));
     }).catch(() => {});
-    api.get('/categories/tree').then((r) => setCats(r.data)).catch(() => {});
+    api.get('/categories/tree').then((r) => {
+      setCats(r.data);
+      const roots = r.data.slice(0, MAX_CATEGORY_ROWS);
+      Promise.all(roots.map((c) => {
+        const ids = [c.id, ...(c.children || []).map((k) => k.id)].join(',');
+        return api.get('/products', { params: { category_ids: ids, limit: 10 } })
+          .then((x) => ({ id: c.id, name: c.name, items: (x.data.data || []).slice(0, 8) }))
+          .catch(() => ({ id: c.id, name: c.name, items: [] }));
+      })).then((list) => setRows(list.filter((x) => x.items.length)));
+    }).catch(() => {});
     const mediaUrl = (id) => (id ? api.get(`/media/${id}/url`).then((r) => r.data.url).catch(() => '') : Promise.resolve(''));
     api.get('/banners').then(async (r) => {
       const list = (r.data || []).slice(0, 6);
@@ -131,6 +143,13 @@ export default function Home() {
         <SectionHead title="Sản phẩm bán chạy" to="/san-pham?sap-xep=gia-giam" more="Xem bán chạy" />
         <ProductSlider items={best} />
       </Container>
+
+      {rows.map((row) => (
+        <Container key={row.id} className="pb-8">
+          <SectionHead title={row.name} to={`/san-pham?danh-muc=${row.id}`} more={`Xem tất cả ${row.name.toLowerCase()}`} />
+          <ProductSlider items={row.items} />
+        </Container>
+      ))}
     </div>
   );
 }
