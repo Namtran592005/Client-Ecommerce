@@ -62,9 +62,10 @@ export const Container = ({ className = '', children }) => (
 const isExt = (u) => /^https?:\/\//.test(u || '');
 
 function MenuLink({ to, title, onClick, children }) {
-  const cls = 'flex items-center justify-between rounded-lg px-3 py-2.5 text-[15px] font-medium text-slate-700 transition-colors hover:bg-brand-50 hover:text-brand-600';
-  if (isExt(to)) return <a href={to} className={cls} onClick={onClick}>{children}<i className="bi bi-chevron-right text-xs text-slate-400" aria-hidden="true" /></a>;
-  return <Link to={to} state={{ title }} onClick={onClick} className={cls}>{children}<i className="bi bi-chevron-right text-xs text-slate-400" aria-hidden="true" /></Link>;
+  const cls = 'flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm font-normal leading-5 text-slate-600 transition-colors hover:bg-brand-50 hover:text-brand-600';
+  const chev = 'bi bi-chevron-right text-[10px] text-slate-300';
+  if (isExt(to)) return <a href={to} className={cls} onClick={onClick}>{children}<i className={chev} aria-hidden="true" /></a>;
+  return <Link to={to} state={{ title }} onClick={onClick} className={cls}>{children}<i className={chev} aria-hidden="true" /></Link>;
 }
 
 function Burger({ onClick }) {
@@ -73,7 +74,7 @@ function Burger({ onClick }) {
       type="button"
       onClick={onClick}
       aria-label="Mở menu"
-      className="grid size-9 shrink-0 place-items-center rounded-lg text-white transition-colors hover:bg-white/15"
+      className="grid size-9 shrink-0 place-items-center rounded-lg text-white transition-colors hover:bg-white/15 md:hidden"
     >
       <i className="bi bi-list text-[22px] leading-none" aria-hidden="true" />
     </button>
@@ -124,7 +125,8 @@ export function Header({ cats }) {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = (drawer || searchBox) ? 'hidden' : '';
+    const narrow = window.matchMedia('(max-width: 767px)').matches;
+    document.body.style.overflow = (narrow && (drawer || searchBox)) ? 'hidden' : '';
   }, [drawer, searchBox]);
 
   useEffect(() => {
@@ -201,7 +203,7 @@ export function Header({ cats }) {
         aria-label="Menu điều hướng"
       >
         <div className="flex items-center justify-between border-b border-line px-4 py-3">
-          <img src="/logo/logo-dark.png" alt="UniMate" className="h-7" />
+          <img src="/logo/logo-light.png" alt="UniMate" className="h-7" />
           <button
             type="button"
             onClick={() => setDrawer(false)}
