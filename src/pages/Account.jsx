@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useLocation, Routes, Route } from 'react-router-dom';
 import { api, fmtVND, fmtDate, fileUrl, errMsg } from '../api/client';
 import { toast } from '../components/ui/toast';
@@ -153,6 +153,9 @@ function Profile({ profile, setProfile }) {
   const [f, setF] = useState({ first_name: '', last_name: '', display_name: '' });
   const [saving, setSaving] = useState(false);
   const [note, setNote] = useState(null);
+  const [avatar, setAvatar] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const avatarInput = useRef(null);
 
   const [pw, setPw] = useState({ old_password: '', new_password: '', confirm: '' });
   const [pwSaving, setPwSaving] = useState(false);
@@ -165,8 +168,29 @@ function Profile({ profile, setProfile }) {
         last_name: profile.last_name || '',
         display_name: profile.display_name || '',
       });
+      setAvatar(profile.avatar_url || '');
     }
   }, [profile]);
+
+  const pickAvatar = () => avatarInput.current?.click();
+
+  const uploadAvatar = async (file) => {
+    if (!/^image\//.test(file.type)) return toast.warning('Vui lòng chọn tệp ảnh');
+    if (file.size > 5 * 1024 * 1024) return toast.warning('Ảnh vượt quá 5MB');
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const { data } = await api.post('/media/avatar', fd);
+      setAvatar(data.avatar_url);
+      setProfile((p) => ({ ...(p || {}), avatar_url: data.avatar_url }));
+      toast.success('Đã cập nhật ảnh đại diện');
+    } catch (e) {
+      toast.error(errMsg(e));
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const dirty = profile && (f.first_name !== (profile.first_name || '')
     || f.last_name !== (profile.last_name || '')
@@ -210,13 +234,31 @@ function Profile({ profile, setProfile }) {
       <Card>
         <CardHeader>
           <CardTitle>Hồ sơ cá nhân</CardTitle>
-          <p className="text-[13px] text-slate-500">Thông tin này dùng cho việc giao hàng và liên hệ hỗ trợ.</p>
         </CardHeader>
         <CardContent className="pt-4">
           <div className="mb-4 flex items-center gap-3.5 border-b border-line pb-4">
-            <span className="grid size-14 shrink-0 place-items-center rounded-lg bg-brand-500 text-[20px] font-bold text-white">
-              {initials([f.first_name, f.last_name].join(' '), user?.email)}
-            </span>
+            <button
+              type="button"
+              onClick={pickAvatar}
+              aria-label="Đổi ảnh đại diện"
+              className="group relative grid size-14 shrink-0 place-items-center overflow-hidden rounded-lg bg-brand-500 text-[20px] font-bold text-white"
+            >
+              {avatar ? (
+                <img src={avatar} alt="" className="size-full object-cover" />
+              ) : (
+                initials([f.first_name, f.last_name].join(' '), user?.email)
+              )}
+              <span className="absolute inset-0 grid place-items-center bg-black/55 text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+                <i className={uploading ? 'bi bi-arrow-repeat animate-spin text-[18px]' : 'bi bi-camera text-[18px]'} aria-hidden="true" />
+              </span>
+            </button>
+            <input
+              ref={avatarInput}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => { const fl = e.target.files[0]; e.target.value = ''; if (fl) uploadAvatar(fl); }}
+            />
             <div className="min-w-0">
               <p className="text-[16px] font-bold text-ink">{[f.first_name, f.last_name].filter(Boolean).join(' ') || 'Chưa đặt tên'}</p>
               <p className="truncate text-[13px] text-slate-500">{user?.email || user?.phone}</p>
@@ -315,7 +357,6 @@ function MyOrders() {
     <Card>
       <CardHeader>
         <CardTitle>Đơn mua</CardTitle>
-        <p className="text-[13px] text-slate-500">{rows.length} đơn hàng trong tài khoản</p>
       </CardHeader>
       <CardContent className="pt-4">
         <div className="mb-4 flex gap-1.5 overflow-x-auto border-b border-line pb-3">

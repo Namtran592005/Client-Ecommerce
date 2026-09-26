@@ -285,21 +285,23 @@ export function Footer() {
             </div>
           </div>
           <FooterCol title="Về UniMate">
+            <FooterLink to="/gioi-thieu">Giới thiệu UniMate</FooterLink>
             <FooterLink to="/san-pham">Sản phẩm</FooterLink>
             <FooterLink to="/khuyen-mai">Thông báo khuyến mãi</FooterLink>
             <FooterLink to="/tai-khoan/don-hang">Theo dõi đơn hàng</FooterLink>
-            <FooterLink to="/tai-khoan">Câu hỏi thường gặp</FooterLink>
+            <FooterLink to="/cau-hoi-thuong-gap">Câu hỏi thường gặp</FooterLink>
           </FooterCol>
           <FooterCol title="Chính sách">
-            <FooterLink to="/thanh-toan">Chính sách Bán hàng</FooterLink>
-            <FooterLink to="/thanh-toan">Chính sách Giao hàng</FooterLink>
-            <FooterLink to="/tai-khoan/don-hang">Chính sách Đổi trả</FooterLink>
-            <FooterLink to="/dang-ky">Chính sách Bảo mật</FooterLink>
+            <FooterLink to="/chinh-sach/ban-hang">Chính sách Bán hàng</FooterLink>
+            <FooterLink to="/chinh-sach/giao-hang">Chính sách Giao hàng</FooterLink>
+            <FooterLink to="/chinh-sach/doi-tra">Chính sách Đổi trả</FooterLink>
+            <FooterLink to="/chinh-sach/bao-mat">Chính sách Bảo mật</FooterLink>
           </FooterCol>
           <FooterCol title="Liên hệ">
             <li>Hotline: 1900 255 579</li>
             <li>Email: hotro@example.com</li>
-            <FooterLink to="/tai-khoan/dia-chi">Danh sách cửa hàng</FooterLink>
+            <FooterLink to="/tra-cuu-don-hang">Tra cứu đơn hàng</FooterLink>
+            <FooterLink to="/gioi-thieu">Danh sách cửa hàng</FooterLink>
           </FooterCol>
         </div>
         <div className="mt-8 flex flex-col items-center justify-between gap-1 border-t border-line pt-4 text-[12px] text-slate-500 sm:flex-row">
