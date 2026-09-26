@@ -115,7 +115,7 @@ export default function ProductDetail() {
   const inStock = (variant?.available_qty ?? 0) > 0;
 
   return (
-    <main className="pb-6">
+      <main className="pb-24 lg:pb-6">
       <Container>
         <nav aria-label="breadcrumb" className="py-3 text-[12.5px] text-slate-500">
           <ol className="flex flex-wrap items-center gap-1.5">
@@ -407,11 +407,12 @@ export default function ProductDetail() {
       )}
 
       <div className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-line bg-white/95 px-4 py-2.5 backdrop-blur lg:hidden">
-        <span className="text-[15px] font-bold text-price">
+        <span className="shrink-0 text-[15px] font-bold text-price">
           {fmtVND(price).replace('₫', '')}<small className="ml-0.5 text-[11px]">VND</small>
         </span>
-        <Button variant="outline" block onClick={doAdd} disabled={!inStock}>Thêm vào giỏ</Button>
-        <Button block onClick={buyNow} disabled={!inStock}>Mua ngay</Button>
+        <Button variant="outline" block onClick={doAdd} disabled={!inStock}>
+          <i className="bi bi-cart-plus" aria-hidden="true" /> Thêm vào giỏ
+        </Button>
       </div>
     </main>
   );
