@@ -4,10 +4,11 @@ import { useEffect, useRef, useState } from 'react';
 //   zalo.svg     - Simple Icons (màu #0068FF)
 //   messenger.svg- Font Awesome 6 Brands (màu #0084FF)
 //   phone.svg    - bi bi-telephone-fill
+// Nền nút đều trắng để icon thương hiệu giữ đúng màu gốc.
 const CHANNELS = [
-  { key: 'zalo', label: 'Zalo', img: '/brand/zalo.svg', href: 'https://zalo.me/1900255579', tone: 'bg-white' },
-  { key: 'messenger', label: 'Messenger', img: '/brand/messenger.svg', href: 'https://m.me/unimate', tone: 'bg-white' },
-  { key: 'phone', label: 'Gọi 1900 255 579', img: '/brand/phone.svg', href: 'tel:1900255579', tone: 'bg-emerald-600 text-white' },
+  { key: 'zalo', label: 'Zalo', img: '/brand/zalo.svg', href: 'https://zalo.me/1900255579' },
+  { key: 'messenger', label: 'Messenger', img: '/brand/messenger.svg', href: 'https://m.me/unimate' },
+  { key: 'phone', label: 'Gọi 1900 255 579', img: '/brand/phone.svg', href: 'tel:1900255579' },
 ];
 
 const SIZE = 'size-11'; // 44px — nút chính và nút xổ ra cùng cỡ
@@ -48,7 +49,7 @@ export default function ContactFab() {
                 rel="noreferrer"
                 aria-label={c.label}
                 onClick={() => setOpen(false)}
-                className={`grid ${SIZE} place-items-center rounded-full shadow-pop ring-1 ring-line transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50 ${c.tone}`}
+                className={`grid ${SIZE} place-items-center rounded-full bg-white shadow-pop ring-1 ring-line transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50`}
               >
                 <img src={c.img} alt="" className="size-6 object-contain" loading="lazy" />
               </a>
@@ -62,9 +63,7 @@ export default function ContactFab() {
         onClick={() => setOpen((o) => !o)}
         aria-label={open ? 'Đóng liên hệ' : 'Liên hệ'}
         aria-expanded={open}
-        className={`grid ${SIZE} place-items-center rounded-full text-white shadow-pop transition-all hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50 active:scale-95 ${
-          open ? 'bg-brand-700' : 'bg-brand-600'
-        }`}
+        className={`grid ${SIZE} place-items-center rounded-full bg-white text-brand-600 shadow-pop ring-1 ring-line transition-all hover:bg-brand-50 hover:ring-brand-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50 active:scale-95`}
       >
         <i
           className={`bi ${open ? 'bi-chevron-down' : 'bi-headset'} text-[20px] leading-none transition-transform`}

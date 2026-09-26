@@ -272,6 +272,7 @@ export function Footer() {
               {[
                 ['/brand/facebook.svg', 'Facebook'], ['/brand/instagram.svg', 'Instagram'],
                 ['/brand/tiktok.svg', 'TikTok'], ['/brand/zalo.svg', 'Zalo'],
+                ['/brand/tammi.jpg', 'Tammi'],
               ].map(([icon, label]) => (
                 <a
                   key={label}
