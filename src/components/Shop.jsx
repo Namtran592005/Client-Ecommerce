@@ -1,11 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { fmtVND, fileUrl } from '../api/client';
-import { api } from '../api/client';
+import { fmtVND, fileUrl, api } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 import { useCart } from '../cart/CartContext';
 import { toast } from './Toast';
+import { Button } from './ui/button';
+import { Stars } from './ui/misc';
 
-// Bấm "Mua Hàng" ngoài thẻ: 1 biến thể -> thêm thẳng vào giỏ; nhiều biến thể -> qua trang chọn
+// Bấm "Mua ngay" ngoài thẻ: 1 biến thể -> thêm thẳng giỏ; nhiều biến thể -> qua trang chọn
 async function quickAdd(p, add, nav) {
   try {
     const { data } = await api.get(`/products/${p.id}`);
@@ -16,7 +17,7 @@ async function quickAdd(p, add, nav) {
     } else {
       nav(`/san-pham/${p.slug}`);
     }
-  } catch (e) { nav(`/san-pham/${p.slug}`); }
+  } catch { nav(`/san-pham/${p.slug}`); }
 }
 
 export function imgOf(p, i = 0) {
@@ -25,90 +26,147 @@ export function imgOf(p, i = 0) {
   return '';
 }
 
-// Thẻ SP slider trang chủ (mẫu gốc)
-export function ProductCardHome({ p, badge }) {
-  const nav = useNavigate();
-  const { add } = useCart();
+function Thumb({ p, size = 28, children }) {
+  const src = imgOf(p);
   return (
-    <div className="product-card">
-      <div className="thumb">
-        {badge && <span className="label-new">{badge}</span>}
-        <Link to={`/san-pham/${p.slug}`}>
-          {imgOf(p)
-            ? <img src={imgOf(p)} alt={p.name} loading="lazy" />
-            : <span className="d-flex align-items-center justify-content-center w-100 h-100 text-white fw-bold" style={{ background: 'linear-gradient(135deg,#0b3d9e,#2f7fd0)', fontSize: 28, aspectRatio: '1/1' }}>{p.name[0]}</span>}
-        </Link>
-      </div>
-      <div className="info">
-        <Link to={`/san-pham/${p.slug}`} className="p-name">{p.name}</Link>
-        <div className="p-price">{fmtVND(p.base_price).replace('₫', '')}<small>VND</small></div>
-        <button className="p-buy" onClick={() => quickAdd(p, add, nav)}>Mua Hàng</button>
-      </div>
+    <div className="relative overflow-hidden rounded-t-xl bg-[#f8fafc]">
+      <Link to={`/san-pham/${p.slug}`} className="block aspect-square">
+        {src ? (
+          <img
+            src={src}
+            alt={p.name}
+            loading="lazy"
+            className="size-full object-contain p-2 transition-transform duration-200 hover:scale-[1.04]"
+          />
+        ) : (
+          <span
+            className="grid size-full place-items-center font-bold text-white"
+            style={{ background: 'linear-gradient(135deg,#0b3d9e,#2f7fd0)', fontSize: size }}
+          >
+            {p.name[0]}
+          </span>
+        )}
+      </Link>
+      {children}
     </div>
   );
 }
 
-// Thẻ SP trang danh mục (mẫu gốc: tim + giá cũ)
-export function ProductCardCat({ p }) {
-  const nav = useNavigate();
-  const { user } = useAuth();
-  const { add } = useCart();
-  const off = p.compare_at_price > p.base_price ? Math.round((1 - p.base_price / p.compare_at_price) * 100) : 0;
-  const wish = async (e) => {
-    e.preventDefault(); e.stopPropagation();
-    if (!user) return nav('/dang-nhap');
-    try { await api.post('/cart/wishlist/items', { product_id: p.id }); toast.success('Đã thêm vào yêu thích'); }
-    catch (err) { toast.warning(err?.response?.data?.error || 'Đã có trong yêu thích'); }
-  };
+const Price = ({ p, className = '' }) => {
+  const off = p.compare_at_price > p.base_price;
   return (
-    <article className="product-card-cat">
-      <div className="thumb">
-        {off > 0 ? <span className="label-discount">-{off}%</span> : <span className="label-new">Mới</span>}
-        <button className="wishlist-btn" aria-label="Yêu thích" onClick={wish}><i className="bi bi-heart"></i></button>
-        <Link to={`/san-pham/${p.slug}`}>
-          {imgOf(p)
-            ? <img src={imgOf(p)} alt={p.name} loading="lazy" />
-            : <span className="d-flex align-items-center justify-content-center w-100 h-100 text-white fw-bold" style={{ background: 'linear-gradient(135deg,#0b3d9e,#2f7fd0)', fontSize: 32, aspectRatio: '1/1' }}>{p.name[0]}</span>}
+    <div className={`flex flex-wrap items-baseline gap-x-1.5 ${className}`}>
+      <span className="text-[15px] font-bold text-price">
+        {fmtVND(p.base_price).replace('₫', '')}<small className="ml-0.5 text-[11px] font-semibold">VND</small>
+      </span>
+      {off && (
+        <span className="text-[11px] text-slate-400 line-through">
+          {Number(p.compare_at_price).toLocaleString('vi-VN')}₫
+        </span>
+      )}
+    </div>
+  );
+};
+
+// Thẻ sản phẩm — trang chủ
+export function ProductCardHome({ p, badge }) {
+  const nav = useNavigate();
+  const { add } = useCart();
+  return (
+    <article className="product-card flex h-full flex-col overflow-hidden rounded-xl border border-line bg-white shadow-card transition-shadow hover:shadow-pop">
+      <Thumb p={p}>
+        {badge && (
+          <span className="absolute top-2 left-2 rounded-md bg-accent-500 px-1.5 py-0.5 text-[10.5px] font-bold text-brand-900">
+            {badge}
+          </span>
+        )}
+      </Thumb>
+      <div className="flex flex-1 flex-col gap-1.5 p-2.5">
+        <Link
+          to={`/san-pham/${p.slug}`}
+          className="line-clamp-2 min-h-[34px] text-[12.5px] leading-snug text-slate-700 transition-colors hover:text-brand-500"
+        >
+          {p.name}
         </Link>
-      </div>
-      <div className="info">
-        <Link to={`/san-pham/${p.slug}`} className="p-name">{p.name}</Link>
-        <div className="p-price">{fmtVND(p.base_price).replace('₫', '')}<small>VND</small>
-          {p.compare_at_price > p.base_price && <span className="p-price-old">{Number(p.compare_at_price).toLocaleString('vi-VN')}</span>}
-        </div>
-        <button className="p-buy" onClick={() => quickAdd(p, add, nav)}>Mua Hàng</button>
+        <Price p={p} />
+        <Button size="sm" block className="mt-auto" onClick={() => quickAdd(p, add, nav)}>Mua ngay</Button>
       </div>
     </article>
   );
 }
 
-// Khung slider mẫu gốc (children là .product-card / .qc-item)
-export function HSlider({ children }) {
-  return <>{children}</>;
-}
+// Thẻ sản phẩm — trang danh mục (có nút yêu thích + điểm đánh giá)
+export function ProductCardCat({ p }) {
+  const nav = useNavigate();
+  const { user } = useAuth();
+  const { add } = useCart();
+  const off = p.compare_at_price > p.base_price ? Math.round((1 - p.base_price / p.compare_at_price) * 100) : 0;
 
-// Tiêu đề section mẫu gốc
-export function SectionHead({ title, to, more }) {
+  const wish = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) return nav('/dang-nhap');
+    try {
+      await api.post('/cart/wishlist/items', { product_id: p.id });
+      toast.success('Đã thêm vào yêu thích');
+    } catch (err) {
+      toast.warning(err?.response?.data?.error || 'Đã có trong yêu thích');
+    }
+  };
+
   return (
-    <div className="section-head">
-      <h3 className="section-title mb-0"><Link to={to} className="text-decoration-none text-dark">{title}</Link></h3>
-      <Link to={to} className="more">{more || 'Xem Thêm'}</Link>
-    </div>
+    <article className="product-card-cat flex h-full flex-col overflow-hidden rounded-xl border border-line bg-white shadow-card transition-shadow hover:shadow-pop">
+      <Thumb p={p} size={32}>
+        {off > 0 ? (
+          <span className="absolute top-2 left-2 rounded-md bg-price px-1.5 py-0.5 text-[10.5px] font-bold text-white">-{off}%</span>
+        ) : (
+          <span className="absolute top-2 left-2 rounded-md bg-accent-500 px-1.5 py-0.5 text-[10.5px] font-bold text-brand-900">Mới</span>
+        )}
+        <button
+          type="button"
+          onClick={wish}
+          aria-label={`Yêu thích ${p.name}`}
+          className="absolute top-2 right-2 grid size-8 place-items-center rounded-lg bg-white/90 text-slate-500 shadow-sm transition-colors hover:text-price"
+        >
+          <i className="bi bi-heart" aria-hidden="true" />
+        </button>
+      </Thumb>
+      <div className="flex flex-1 flex-col gap-1.5 p-3">
+        <Link
+          to={`/san-pham/${p.slug}`}
+          className="line-clamp-2 min-h-[36px] text-[13px] leading-snug text-slate-700 transition-colors hover:text-brand-500"
+        >
+          {p.name}
+        </Link>
+        {p.rating_avg > 0 && <Stars value={p.rating_avg} count={p.rating_count} />}
+        <Price p={p} className="mt-auto" />
+        <Button size="sm" block onClick={() => quickAdd(p, add, nav)}>Mua ngay</Button>
+      </div>
+    </article>
   );
 }
 
-// Phân trang mẫu gốc
 export function Pager({ page, totalPages, onChange }) {
   if (totalPages <= 1) return null;
   const nums = [];
   for (let n = Math.max(1, page - 2); n <= Math.min(totalPages, page + 2); n++) nums.push(n);
+  const btn = 'grid size-9 place-items-center rounded-lg border border-slate-200 bg-white text-sm text-slate-600 transition-colors hover:border-brand-500 hover:text-brand-500 disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600';
   return (
-    <div className="pagination-wrap">
-      <button disabled={page <= 1} onClick={() => onChange(page - 1)}>‹</button>
-      {nums[0] > 1 && <button onClick={() => onChange(1)}>1</button>}
-      {nums.map((n) => <button key={n} className={n === page ? 'active' : ''} onClick={() => onChange(n)}>{n}</button>)}
-      {nums[nums.length - 1] < totalPages && <button onClick={() => onChange(totalPages)}>{totalPages}</button>}
-      <button disabled={page >= totalPages} onClick={() => onChange(page + 1)}>›</button>
-    </div>
+    <nav className="mt-6 flex flex-wrap items-center justify-center gap-1.5" aria-label="Phân trang">
+      <button className={btn} disabled={page <= 1} onClick={() => onChange(page - 1)} aria-label="Trang trước">‹</button>
+      {nums[0] > 1 && <button className={btn} onClick={() => onChange(1)}>1</button>}
+      {nums.map((n) => (
+        <button
+          key={n}
+          aria-current={n === page ? 'page' : undefined}
+          className={`${btn} ${n === page ? 'border-brand-500 bg-brand-500 font-bold text-white hover:text-white' : ''}`}
+          onClick={() => onChange(n)}
+        >
+          {n}
+        </button>
+      ))}
+      {nums[nums.length - 1] < totalPages && <button className={btn} onClick={() => onChange(totalPages)}>{totalPages}</button>}
+      <button className={btn} disabled={page >= totalPages} onClick={() => onChange(page + 1)} aria-label="Trang sau">›</button>
+    </nav>
   );
 }

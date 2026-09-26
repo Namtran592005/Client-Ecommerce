@@ -2,87 +2,160 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { api, fmtVND, fileUrl } from '../api/client';
 import { useCart } from '../cart/CartContext';
+import { Container } from '../components/Layout';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Empty, QtyStepper, Chip } from '../components/ui/misc';
+
+const SHIP_FEE = 30000;
+const money = (n) => `${fmtVND(n).replace('₫', '')}VND`;
 
 export default function Cart() {
   const { cart, setQty, removeItem } = useCart();
   const [coupon, setCoupon] = useState('');
   const [discount, setDiscount] = useState(null);
   const [err, setErr] = useState('');
+  const [checking, setChecking] = useState(false);
   const nav = useNavigate();
 
   const checkCoupon = async () => {
     if (!coupon.trim()) return;
     setErr('');
-    const { data } = await api.post('/promos/coupons/validate', { code: coupon.trim(), order_amount: cart.subtotal });
-    if (data.valid) setDiscount({ code: coupon.trim(), amount: data.discount_amount, coupon: data.coupon });
-    else { setDiscount(null); setErr(data.error); }
+    setChecking(true);
+    try {
+      const { data } = await api.post('/promos/coupons/validate', { code: coupon.trim(), order_amount: cart.subtotal });
+      if (data.valid) setDiscount({ code: coupon.trim().toUpperCase(), amount: data.discount_amount, coupon: data.coupon });
+      else { setDiscount(null); setErr(data.error || 'Mã không dùng được'); }
+    } catch (e) {
+      setDiscount(null);
+      setErr(e?.response?.data?.error || 'Không kiểm tra được mã');
+    } finally { setChecking(false); }
   };
-  const ship0 = 30000;
-  const ship = discount?.coupon?.type === 'free_shipping' ? 0 : ship0;
+
+  const ship = discount?.coupon?.type === 'free_shipping' ? 0 : SHIP_FEE;
   const total = Math.max(0, cart.subtotal - (discount?.amount || 0) + (cart.items.length ? ship : 0));
 
   return (
-    <main className="category-page">
-      <div className="breadcrumb-wrap">
-        <nav aria-label="breadcrumb">
-          <ol className="breadcrumb-custom">
-            <li><Link to="/">Trang chủ</Link><span className="sep"><i className="bi bi-chevron-right"></i></span></li>
-            <li><span className="current">Giỏ hàng</span></li>
+    <main className="pb-10">
+      <Container>
+        <nav aria-label="breadcrumb" className="py-3 text-[12.5px] text-slate-500">
+          <ol className="flex items-center gap-1.5">
+            <li><Link to="/" className="hover:text-brand-500">Trang chủ</Link></li>
+            <li aria-hidden="true"><i className="bi bi-chevron-right text-[10px]" /></li>
+            <li className="font-medium text-slate-700">Giỏ hàng</li>
           </ol>
         </nav>
-      </div>
-      <div className="page-title-wrap">
-        <h1 className="page-title">Giỏ hàng ({cart.items.length})</h1>
-      </div>
-      <div className="category-container">
+
+        <h1 className="pb-4 text-[22px] font-extrabold tracking-tight text-ink sm:text-[26px]">
+          Giỏ hàng <span className="text-[15px] font-semibold text-slate-400">({cart.items.length} sản phẩm)</span>
+        </h1>
+
         {!cart.items.length ? (
-          <div className="text-center py-5">
-            <i className="bi bi-cart-x" style={{ fontSize: 56, color: '#adb5bd' }}></i>
-            <p className="mt-2">Giỏ hàng trống.</p>
-            <Link to="/san-pham" className="p-buy" style={{ display: 'inline-block', padding: '8px 32px' }}>Mua Sắm Ngay</Link>
-          </div>
+          <Empty
+            icon="bi-cart-x"
+            title="Giỏ hàng đang trống"
+            desc="Hãy chọn thêm sản phẩm bạn thích để bắt đầu."
+            action={<Link to="/san-pham"><Button className="mt-1">Đi mua sắm ngay</Button></Link>}
+          />
         ) : (
-          <div className="row g-4">
-            <div className="col-lg-8 cart-items-wrap">
+          <div className="grid gap-5 lg:grid-cols-[1fr_340px]">
+            <ul className="grid gap-3">
               {cart.items.map((it) => (
-                <div key={it.id} className="cart-item">
-                  <div className="cart-thumb">
-                    {it.image_key ? <img src={fileUrl(it.image_key)} alt="" loading="lazy" /> : null}
+                <li key={it.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-white p-3 shadow-card sm:flex-nowrap sm:gap-4">
+                  <Link to={`/san-pham/${it.slug || ''}`} className="grid size-[68px] shrink-0 place-items-center overflow-hidden rounded-lg border border-line bg-[#f8fafc]">
+                    {it.image_key
+                      ? <img src={fileUrl(it.image_key)} alt="" loading="lazy" className="size-full object-contain p-1" />
+                      : <i className="bi bi-image text-slate-300" aria-hidden="true" />}
+                  </Link>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[13.5px] font-semibold text-slate-800">{it.product_name}</p>
+                    <p className="truncate text-[12px] text-slate-500">{it.variant_name} · SKU: {it.sku}</p>
+                    <p className="mt-1 text-[14px] font-bold text-price">{money(it.price)}</p>
                   </div>
-                  <div className="flex-grow-1" style={{ minWidth: 0 }}>
-                    <div style={{ fontWeight: 600, fontSize: 13.5 }}>{it.product_name}</div>
-                    <div style={{ fontSize: 12, color: '#6c757d' }}>{it.variant_name} · SKU: {it.sku}</div>
-                    <div className="p-price" style={{ color: 'var(--unimate-primary)', fontWeight: 700 }}>{fmtVND(it.price).replace('₫', '')}<small>VND</small></div>
+
+                  <div className="flex shrink-0 flex-col items-end gap-2">
+                    <QtyStepper
+                      value={it.quantity}
+                      min={1}
+                      max={99}
+                      onChange={(n) => setQty(it.id, n)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeItem(it.id)}
+                      className="inline-flex items-center gap-1 text-[12px] font-semibold text-slate-400 transition-colors hover:text-price"
+                    >
+                      <i className="bi bi-trash" aria-hidden="true" /> Xóa
+                    </button>
                   </div>
-                  <div>
-                    <div className="qty-group">
-                      <button className="qty-btn" disabled={it.quantity <= 1} onClick={() => setQty(it.id, it.quantity - 1)}>−</button>
-                      <input className="qty-input" value={it.quantity} onChange={(e) => { const n = Number(e.target.value) || 1; if (n >= 1) setQty(it.id, n); }} />
-                      <button className="qty-btn" onClick={() => setQty(it.id, it.quantity + 1)}>+</button>
-                    </div>
-                    <div className="text-end mt-1"><button className="cart-del" onClick={() => removeItem(it.id)}><i className="bi bi-trash"></i>Xóa</button></div>
-                  </div>
-                </div>
+                </li>
               ))}
-            </div>
-            <div className="col-lg-4">
-              <div className="summary-box" style={{ position: 'sticky', top: 150 }}>
-                <div className="coupon-row">
-                  <input placeholder="Mã giảm giá..." value={coupon} onChange={(e) => setCoupon(e.target.value)} />
-                  <button className="btn-apply" onClick={checkCoupon}>Áp dụng</button>
+            </ul>
+
+            <aside>
+              <div className="sticky top-28 grid gap-3 rounded-xl border border-line bg-white p-4 shadow-card">
+                <div>
+                  <p className="mb-2 text-[13px] font-semibold text-slate-700">Mã giảm giá</p>
+                  <div className="flex gap-2">
+                    <Input
+                      value={coupon}
+                      onChange={(e) => setCoupon(e.target.value.toUpperCase())}
+                      placeholder="Nhập mã, VD: CHAO10"
+                      onKeyDown={(e) => e.key === 'Enter' && checkCoupon()}
+                    />
+                    <Button variant="outline" onClick={checkCoupon} disabled={checking || !coupon.trim()}>
+                      {checking ? '...' : 'Áp dụng'}
+                    </Button>
+                  </div>
+                  {discount && (
+                    <p className="mt-2 flex items-center gap-1.5 text-[12.5px] text-emerald-700">
+                      <i className="bi bi-check-circle-fill" aria-hidden="true" />
+                      Đã áp dụng {discount.code} — giảm {money(discount.amount)}
+                    </p>
+                  )}
+                  {err && (
+                    <p className="mt-2 flex items-center gap-1.5 text-[12.5px] text-price">
+                      <i className="bi bi-exclamation-circle-fill" aria-hidden="true" /> {err}
+                    </p>
+                  )}
                 </div>
-                {discount && <p className="mini-note ok">Áp dụng {discount.code}: −{fmtVND(discount.amount).replace('₫', '')}VND</p>}
-                {err && <p className="mini-note err">{err}</p>}
-                <div className="summary-row"><span>Tạm tính</span><b>{fmtVND(cart.subtotal).replace('₫', '')}VND</b></div>
-                <div className="summary-row"><span>Phí ship (dự kiến)</span><b>{fmtVND(ship).replace('₫', '')}VND</b></div>
-                <div className="summary-total"><span>Tổng</span><span className="amount">{fmtVND(total).replace('₫', '')}VND</span></div>
-                <button className="btn-checkout mt-3" onClick={() => nav('/thanh-toan', { state: discount ? { coupon: discount.code } : {} })}>Tiến Hành Đặt Hàng</button>
-                <Link to="/san-pham" className="d-block text-center mt-2" style={{ fontSize: 13, color: 'var(--unimate-primary)' }}>Tiếp tục mua sắm</Link>
+
+                <div className="grid gap-1.5 border-t border-line pt-3 text-[13.5px]">
+                  <div className="flex justify-between text-slate-600">
+                    <span>Tạm tính</span><b className="text-slate-800">{money(cart.subtotal)}</b>
+                  </div>
+                  {discount?.amount > 0 && (
+                    <div className="flex justify-between text-emerald-700">
+                      <span>Giảm giá</span><b>−{money(discount.amount)}</b>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-slate-600">
+                    <span>Phí vận chuyển</span>
+                    <b className="text-slate-800">{ship === 0 ? <Chip color="green">Miễn phí</Chip> : money(ship)}</b>
+                  </div>
+                </div>
+
+                <div className="flex items-baseline justify-between border-t border-line pt-3">
+                  <span className="text-[14px] font-semibold text-slate-700">Tổng cộng</span>
+                  <span className="text-[20px] font-extrabold text-price">{money(total)}</span>
+                </div>
+
+                <Button
+                  size="lg"
+                  block
+                  onClick={() => nav('/thanh-toan', { state: discount ? { coupon: discount.code } : {} })}
+                >
+                  Tiến hành đặt hàng
+                </Button>
+                <Link to="/san-pham" className="text-center text-[13px] font-semibold text-brand-500 hover:underline">
+                  Tiếp tục mua sắm
+                </Link>
               </div>
-            </div>
+            </aside>
           </div>
         )}
-      </div>
+      </Container>
     </main>
   );
 }

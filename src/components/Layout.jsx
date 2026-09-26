@@ -4,7 +4,7 @@ import { useAuth } from '../auth/AuthContext';
 import { useCart } from '../cart/CartContext';
 import { api } from '../api/client';
 
-// Hook slider mẫu gốc: arrows + kéo chuột
+// Hook slider: nút mũi tên + kéo chuột
 export function useSlider() {
   const trackRef = useRef(null);
   const [canPrev, setCanPrev] = useState(false);
@@ -55,13 +55,50 @@ export function useSlider() {
   };
 }
 
+export const Container = ({ className = '', children }) => (
+  <div className={`mx-auto w-full max-w-[1200px] px-4 ${className}`}>{children}</div>
+);
+
 const isExt = (u) => /^https?:\/\//.test(u || '');
+
 function MenuLink({ to, title, onClick, children }) {
-  if (isExt(to)) return <a href={to}>{children}</a>;
-  return <Link to={to} state={{ title }} onClick={onClick}>{children}</Link>;
+  const cls = 'flex items-center justify-between rounded-lg px-3 py-2.5 text-[15px] font-medium text-slate-700 transition-colors hover:bg-brand-50 hover:text-brand-600';
+  if (isExt(to)) return <a href={to} className={cls} onClick={onClick}>{children}<i className="bi bi-chevron-right text-xs text-slate-400" aria-hidden="true" /></a>;
+  return <Link to={to} state={{ title }} onClick={onClick} className={cls}>{children}<i className="bi bi-chevron-right text-xs text-slate-400" aria-hidden="true" /></Link>;
 }
 
-export function Header({ cats }) {  const { user, logout } = useAuth();
+function Burger({ onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label="Mở menu"
+      className="grid size-9 shrink-0 place-items-center rounded-lg text-white transition-colors hover:bg-white/15"
+    >
+      <i className="bi bi-list text-[22px] leading-none" aria-hidden="true" />
+    </button>
+  );
+}
+
+function CartButton({ count }) {
+  return (
+    <Link
+      to="/gio-hang"
+      aria-label={`Giỏ hàng, ${count} sản phẩm`}
+      className="relative grid size-9 shrink-0 place-items-center rounded-lg text-white transition-colors hover:bg-white/15"
+    >
+      <i className="bi bi-cart3 text-[19px] leading-none" aria-hidden="true" />
+      {count > 0 && (
+        <span className="absolute -right-0.5 -top-0.5 grid min-w-[18px] place-items-center rounded-full bg-accent-500 px-1 text-[10.5px] font-bold leading-[18px] text-brand-900">
+          {count > 99 ? '99+' : count}
+        </span>
+      )}
+    </Link>
+  );
+}
+
+export function Header({ cats }) {
+  const { user, logout } = useAuth();
   const { count } = useCart();
   const [drawer, setDrawer] = useState(false);
   const [searchBox, setSearchBox] = useState(false);
@@ -74,8 +111,8 @@ export function Header({ cats }) {  const { user, logout } = useAuth();
     if (cats && cats.length) { setCatsFull(cats); return; }
     api.get('/categories/tree').then((r) => setCatsFull(r.data)).catch(() => {});
   }, [cats]);
+
   useEffect(() => {
-    // Menu do admin tuỳ chỉnh (shop.menu); thiếu thì dùng mặc định
     api.get('/settings/public').then((r) => {
       const m = (r.data || []).find((x) => x.setting_key === 'shop.menu');
       if (!m) return;
@@ -85,149 +122,211 @@ export function Header({ cats }) {  const { user, logout } = useAuth();
       } catch { /* ignore */ }
     }).catch(() => {});
   }, []);
+
   useEffect(() => {
     document.body.style.overflow = (drawer || searchBox) ? 'hidden' : '';
   }, [drawer, searchBox]);
+
   useEffect(() => {
     const esc = (e) => { if (e.key === 'Escape') { setDrawer(false); setSearchBox(false); } };
     document.addEventListener('keydown', esc);
     return () => document.removeEventListener('keydown', esc);
   }, []);
 
+  const submitSearch = (e) => {
+    e.preventDefault();
+    setSearchBox(false);
+    nav(q.trim() ? `/tim-kiem?q=${encodeURIComponent(q.trim())}` : '/san-pham');
+  };
+
+  const menu = shopMenu || [
+    { label: 'Hàng Mới', link: '/san-pham' },
+    { label: 'Bán Chạy', link: '/san-pham?sap-xep=gia-giam' },
+    ...catsFull.map((c) => ({ label: c.name, link: `/san-pham?danh-muc=${c.id}` })),
+    { label: 'Ưu Đãi Đặc Biệt', link: '/khuyen-mai' },
+  ];
+
   return (
-    <header>
-      <div className="top-bar">
-        <div className="container text-center">
-          <span className="d-sm-none">Miễn phí vận chuyển từ <strong>499.000₫</strong> · Hotline 1900 255 579</span>
-          <span className="d-none d-sm-inline">Miễn phí vận chuyển cho mọi đơn hàng từ <strong>499.000 VNĐ</strong> - Hotline 1900 255 579</span>
-        </div>
+    <header className="sticky top-0 z-40 shadow-sm">
+      <div className="bg-brand-600 text-white">
+        <Container className="py-1.5 text-center text-[10.5px] leading-tight sm:text-[12.5px]">
+          <span className="sm:hidden">Miễn phí vận chuyển từ <strong>499.000₫</strong> · Hotline 1900 255 579</span>
+          <span className="hidden sm:inline">Miễn phí vận chuyển cho mọi đơn hàng từ <strong>499.000 VNĐ</strong> - Hotline 1900 255 579</span>
+        </Container>
       </div>
 
-      <div className="header-main">
-        <div className="container">
-          <div className="d-none d-md-flex align-items-center w-100 gap-3">
-            <button className="hamburger" type="button" onClick={() => setDrawer(true)} aria-label="Mở menu">
-              <span className="line"></span><span className="line"></span><span className="line"></span>
-            </button>
-            <Link to="/" className="logo"><img src="/logo/logo-dark.png" alt="UniMate" /></Link>
-            <div className="header-right">
-              <form className="search-desktop" onSubmit={(e) => { e.preventDefault(); nav(q.trim() ? `/tim-kiem?q=${encodeURIComponent(q.trim())}` : '/san-pham'); }}>
-                <i className="bi bi-search"></i>
-                <input type="text" placeholder="Bạn đang muốn tìm kiếm gì?" value={q} onChange={(e) => setQ(e.target.value)} />
-              </form>
-              <Link to="/gio-hang" className="header-icon" aria-label="Giỏ hàng">
-                <i className="bi bi-cart3"></i>
-                <span className="cart-count">{count}</span>
-              </Link>
-            </div>
-          </div>
+      <div className="bg-brand-500 text-white">
+        <Container>
+          <div className="flex h-14 items-center gap-2 sm:h-16 sm:gap-3">
+            <Burger onClick={() => setDrawer(true)} />
+            <Link to="/" className="shrink-0" aria-label="UniMate - trang chủ">
+              <img src="/logo/logo-dark.png" alt="UniMate" className="h-7 sm:h-9" />
+            </Link>
 
-          <div className="d-md-none d-flex align-items-center justify-content-between">
-            <div className="d-flex align-items-center gap-2">
-              <button className="hamburger" type="button" onClick={() => setDrawer(true)} aria-label="Mở menu">
-                <span className="line"></span><span className="line"></span><span className="line"></span>
+            <form onSubmit={submitSearch} className="ml-auto hidden flex-1 items-center rounded-lg bg-white px-3 md:flex md:max-w-[560px] xl:max-w-[470px]">
+              <i className="bi bi-search shrink-0 text-slate-400" aria-hidden="true" />
+              <input
+                type="text"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Bạn đang muốn tìm kiếm gì?"
+                aria-label="Tìm kiếm sản phẩm"
+                className="h-9 w-full bg-transparent px-2 text-sm text-slate-800 outline-none placeholder:text-slate-400"
+              />
+            </form>
+
+            <div className="ml-auto flex items-center gap-0.5 md:ml-0 md:gap-1">
+              <button
+                type="button"
+                onClick={() => setSearchBox(true)}
+                aria-label="Tìm kiếm"
+                className="grid size-9 place-items-center rounded-lg text-white transition-colors hover:bg-white/15 md:hidden"
+              >
+                <i className="bi bi-search text-[18px] leading-none" aria-hidden="true" />
               </button>
-              <Link to="/" className="logo"><img src="/logo/logo-dark.png" alt="UniMate" /></Link>
-            </div>
-            <div className="d-flex align-items-center gap-1">
-              <button className="header-icon" type="button" onClick={() => setSearchBox(true)} aria-label="Tìm kiếm">
-                <i className="bi bi-search"></i>
-              </button>
-              <Link to="/gio-hang" className="header-icon" aria-label="Giỏ hàng">
-                <i className="bi bi-cart3"></i>
-                <span className="cart-count">{count}</span>
-              </Link>
+              <CartButton count={count} />
             </div>
           </div>
-        </div>
+        </Container>
       </div>
 
-      <div className={`drawer-overlay ${drawer ? 'active' : ''}`} onClick={() => setDrawer(false)}></div>
-      <aside className={`drawer ${drawer ? 'active' : ''}`} aria-hidden={!drawer}>
-        <div className="drawer-header">
-          <button className="drawer-close" type="button" onClick={() => setDrawer(false)} aria-label="Đóng menu"><i className="bi bi-x-lg" aria-hidden="true"></i></button>
+      <div
+        onClick={() => setDrawer(false)}
+        className={`fixed inset-0 z-40 bg-black/45 transition-opacity duration-200 md:hidden ${drawer ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
+        aria-hidden="true"
+      />
+      <aside
+        className={`fixed top-0 left-0 z-50 flex h-full w-[300px] max-w-[86vw] flex-col bg-white shadow-pop transition-transform duration-200 md:hidden ${drawer ? 'translate-x-0' : '-translate-x-full'}`}
+        aria-hidden={!drawer}
+        aria-label="Menu điều hướng"
+      >
+        <div className="flex items-center justify-between border-b border-line px-4 py-3">
+          <img src="/logo/logo-dark.png" alt="UniMate" className="h-7" />
+          <button
+            type="button"
+            onClick={() => setDrawer(false)}
+            aria-label="Đóng menu"
+            className="grid size-8 place-items-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100"
+          >
+            <i className="bi bi-x-lg" aria-hidden="true" />
+          </button>
         </div>
-        <div className="drawer-body">
-          <ul className="drawer-menu">
-            {(shopMenu || [
-              { label: 'Hàng Mới', link: '/san-pham' },
-              { label: 'Bán Chạy', link: '/san-pham?sap-xep=gia-giam' },
-              ...catsFull.map((c) => ({ label: c.name, link: `/san-pham?danh-muc=${c.id}` })),
-              { label: 'Ưu Đãi Đặc Biệt', link: '/khuyen-mai' },
-            ]).map((m, i) => (
-              <li key={i}><MenuLink to={m.link} title={m.label} onClick={() => setDrawer(false)}>{m.label} <i className="bi bi-chevron-right"></i></MenuLink></li>
+        <nav className="flex-1 overflow-y-auto p-3">
+          <ul className="grid gap-0.5">
+            {menu.map((m, i) => (
+              <li key={i}><MenuLink to={m.link} title={m.label} onClick={() => setDrawer(false)}>{m.label}</MenuLink></li>
             ))}
+          </ul>
+          <div className="my-3 border-t border-line" />
+          <ul className="grid gap-0.5">
             {user ? (
               <>
-                <li><Link to="/tai-khoan" onClick={() => setDrawer(false)}>Tài khoản của tôi <i className="bi bi-chevron-right"></i></Link></li>
-                <li><button type="button" onClick={async () => { await logout(); setDrawer(false); nav('/'); }}>Đăng xuất <i className="bi bi-chevron-right"></i></button></li>
+                <li><MenuLink to="/tai-khoan" onClick={() => setDrawer(false)}>Tài khoản của tôi</MenuLink></li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={async () => { await logout(); setDrawer(false); nav('/'); }}
+                    className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-[15px] font-medium text-price transition-colors hover:bg-price-soft"
+                  >
+                    Đăng xuất <i className="bi bi-chevron-right text-xs text-slate-400" aria-hidden="true" />
+                  </button>
+                </li>
               </>
             ) : (
-              <li><Link to="/dang-nhap" onClick={() => setDrawer(false)}>Đăng nhập / Đăng ký <i className="bi bi-chevron-right"></i></Link></li>
+              <li><MenuLink to="/dang-nhap" onClick={() => setDrawer(false)}>Đăng nhập / Đăng ký</MenuLink></li>
             )}
           </ul>
-        </div>
+        </nav>
       </aside>
 
-      <div className={`search-lightbox ${searchBox ? 'active' : ''}`}>
-        <form className="search-lightbox-inner" onSubmit={(e) => { e.preventDefault(); setSearchBox(false); nav(q.trim() ? `/tim-kiem?q=${encodeURIComponent(q.trim())}` : '/san-pham'); }}>
-          <input type="text" placeholder="Bạn đang muốn tìm kiếm gì?" value={q} onChange={(e) => setQ(e.target.value)} />
-          <button className="btn-search" type="submit">Tìm</button>
-          <button className="btn-close-x" type="button" onClick={() => setSearchBox(false)} aria-label="Đóng">×</button>
+      <div
+        className={`fixed inset-x-0 top-0 z-50 bg-white px-3 py-3 shadow-pop transition-transform duration-200 md:hidden ${searchBox ? 'translate-y-0' : '-translate-y-full'}`}
+        aria-hidden={!searchBox}
+      >
+        <form onSubmit={submitSearch} className="flex items-center gap-2">
+          <div className="flex flex-1 items-center rounded-lg border border-slate-200 bg-white px-3">
+            <i className="bi bi-search shrink-0 text-slate-400" aria-hidden="true" />
+            <input
+              type="text"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Bạn đang muốn tìm kiếm gì?"
+              aria-label="Tìm kiếm sản phẩm"
+              className="h-10 w-full bg-transparent px-2 text-sm outline-none"
+            />
+          </div>
+          <button type="submit" className="h-10 shrink-0 rounded-lg bg-brand-500 px-4 text-sm font-semibold text-white">Tìm</button>
+          <button
+            type="button"
+            onClick={() => setSearchBox(false)}
+            aria-label="Đóng tìm kiếm"
+            className="grid size-10 shrink-0 place-items-center rounded-lg text-slate-500 hover:bg-slate-100"
+          >
+            <i className="bi bi-x-lg" aria-hidden="true" />
+          </button>
         </form>
       </div>
     </header>
   );
 }
 
+const FooterCol = ({ title, children }) => (
+  <div>
+    <h6 className="mb-3 text-[13.5px] font-bold text-ink">{title}</h6>
+    <ul className="grid gap-2 text-[13px] text-slate-600">{children}</ul>
+  </div>
+);
+
+const FooterLink = ({ to, children }) => (
+  <li><Link to={to} className="transition-colors hover:text-brand-500">{children}</Link></li>
+);
+
 export function Footer() {
   return (
-    <footer className="site-footer">
-      <div className="section-wrap">
-        <div className="row g-4">
-          <div className="col-12 col-md-4 col-lg-3">
-            <div className="footer-brand">
-              <img src="/logo/logo-light.png" alt="UniMate" height="40" />
+    <footer className="mt-10 border-t border-line bg-white">
+      <Container className="py-9">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <img src="/logo/logo-light.png" alt="UniMate" className="h-10" />
+            <div className="mt-4 flex gap-2.5">
+              {[
+                ['bi-facebook', 'Facebook'], ['bi-instagram', 'Instagram'],
+                ['bi-tiktok', 'Tiktok'], ['bi-chat-dots', 'Zalo'],
+              ].map(([icon, label]) => (
+                <a
+                  key={label}
+                  href="#"
+                  aria-label={label}
+                  className="grid size-9 place-items-center rounded-lg bg-mist text-slate-500 transition-colors hover:bg-brand-50 hover:text-brand-500"
+                >
+                  <i className={`bi ${icon}`} aria-hidden="true" />
+                </a>
+              ))}
             </div>
-            <div className="footer-socials">
-              <a href="#" aria-label="Facebook"><i className="bi bi-facebook"></i></a>
-              <a href="#" aria-label="Instagram"><i className="bi bi-instagram"></i></a>
-              <a href="#" aria-label="Tiktok"><i className="bi bi-tiktok"></i></a>
-              <a href="#" aria-label="Zalo"><i className="bi bi-chat-dots"></i></a>
-            </div>
           </div>
-          <div className="col-6 col-md-4 col-lg-3 footer-col">
-            <h6>Về UniMate</h6>
-            <ul>
-              <li><Link to="/san-pham">Sản phẩm</Link></li>
-              <li><Link to="/khuyen-mai">Thông báo khuyến mãi</Link></li>
-              <li><Link to="/tai-khoan/don-hang">Theo dõi đơn hàng</Link></li>
-              <li><Link to="/tai-khoan">Câu hỏi thường gặp</Link></li>
-            </ul>
-          </div>
-          <div className="col-6 col-md-4 col-lg-3 footer-col">
-            <h6>Chính sách</h6>
-            <ul>
-              <li><Link to="/thanh-toan">Chính sách Bán hàng</Link></li>
-              <li><Link to="/thanh-toan">Chính sách Giao hàng</Link></li>
-              <li><Link to="/tai-khoan/don-hang">Chính sách Đổi trả</Link></li>
-              <li><Link to="/dang-ky">Chính sách Bảo mật</Link></li>
-            </ul>
-          </div>
-          <div className="col-12 col-md-12 col-lg-3 footer-col">
-            <h6>Liên hệ</h6>
-            <ul>
-              <li>Hotline: 1900 255 579</li>
-              <li>Email: hotro@example.com</li>
-              <li><Link to="/tai-khoan/dia-chi">Danh sách cửa hàng</Link></li>
-            </ul>
-          </div>
+          <FooterCol title="Về UniMate">
+            <FooterLink to="/san-pham">Sản phẩm</FooterLink>
+            <FooterLink to="/khuyen-mai">Thông báo khuyến mãi</FooterLink>
+            <FooterLink to="/tai-khoan/don-hang">Theo dõi đơn hàng</FooterLink>
+            <FooterLink to="/tai-khoan">Câu hỏi thường gặp</FooterLink>
+          </FooterCol>
+          <FooterCol title="Chính sách">
+            <FooterLink to="/thanh-toan">Chính sách Bán hàng</FooterLink>
+            <FooterLink to="/thanh-toan">Chính sách Giao hàng</FooterLink>
+            <FooterLink to="/tai-khoan/don-hang">Chính sách Đổi trả</FooterLink>
+            <FooterLink to="/dang-ky">Chính sách Bảo mật</FooterLink>
+          </FooterCol>
+          <FooterCol title="Liên hệ">
+            <li>Hotline: 1900 255 579</li>
+            <li>Email: hotro@example.com</li>
+            <FooterLink to="/tai-khoan/dia-chi">Danh sách cửa hàng</FooterLink>
+          </FooterCol>
         </div>
-        <div className="footer-bottom">
+        <div className="mt-8 flex flex-col items-center justify-between gap-1 border-t border-line pt-4 text-[12px] text-slate-500 sm:flex-row">
           <span>© 2026 UniMate Retail (Vietnam) Co., Ltd. All rights reserved.</span>
           <span>Giao hàng toàn quốc · Đổi trả trong 7 ngày</span>
         </div>
-      </div>
+      </Container>
     </footer>
   );
 }

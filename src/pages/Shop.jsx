@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, Link, useLocation } from 'react-router-dom';
-import { api, fmtVND } from '../api/client';
-import { ProductCardCat } from '../components/Shop';
+import { api } from '../api/client';
+import { ProductCardCat, Pager } from '../components/Shop';
+import { Container } from '../components/Layout';
+import { Button } from '../components/ui/button';
+import { Select, Checkbox } from '../components/ui/input';
+import { Empty } from '../components/ui/misc';
 
 const SORTS = [
   { v: '', l: 'Gợi ý' },
@@ -12,7 +16,18 @@ const SORTS = [
   { v: 'ten-az', l: 'Tên A - Z' },
   { v: 'ten-za', l: 'Tên Z - A' },
 ];
-const PRICE_MIN = 0, PRICE_MAX = 2000000;
+const PRICE_MIN = 0;
+const PRICE_MAX = 2000000;
+
+const Crumb = ({ title }) => (
+  <nav aria-label="breadcrumb" className="py-3 text-[12.5px] text-slate-500">
+    <ol className="flex items-center gap-1.5">
+      <li><Link to="/" className="hover:text-brand-500">Trang chủ</Link></li>
+      <li aria-hidden="true"><i className="bi bi-chevron-right text-[10px]" /></li>
+      <li className="font-medium text-slate-700">{title}</li>
+    </ol>
+  </nav>
+);
 
 export default function Shop() {
   const [sp, setSp] = useSearchParams();
@@ -40,7 +55,10 @@ export default function Shop() {
     }
     return '';
   })();
-  const pageTitle = q ? `Kết quả cho "${q}"` : cat ? (catName || 'Sản phẩm') : (loc.state?.title || (sort === 'gia-giam' ? 'Bán Chạy' : 'Sản phẩm'));
+
+  const pageTitle = q
+    ? `Kết quả cho "${q}"`
+    : cat ? (catName || 'Sản phẩm') : (loc.state?.title || (sort === 'gia-giam' ? 'Bán Chạy' : 'Sản phẩm'));
 
   const load = async (page = 1) => {
     const params = { page, limit: 20 };
@@ -73,7 +91,6 @@ export default function Shop() {
     setSp(n);
   };
   const clearAll = () => setSp({});
-  const toggleGroup = (k) => setOpenGroups((g) => ({ ...g, [k]: !g[k] }));
   const gotoPage = (p) => {
     const n = new URLSearchParams(sp);
     n.set('trang', p);
@@ -81,152 +98,218 @@ export default function Shop() {
     window.scrollTo(0, 0);
   };
 
-  const priceUI = (
-    <>
-      <div className="price-slider-values">
-        <span className="value-box">{pMin.toLocaleString('vi-VN')}</span>
-        <span className="dash">–</span>
-        <span className="value-box">{pMax.toLocaleString('vi-VN')}</span>
+  const PriceFilter = (
+    <div className="grid gap-2.5">
+      <div className="flex items-center gap-2">
+        <span className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-center text-[12.5px] font-semibold">
+          {pMin.toLocaleString('vi-VN')}
+        </span>
+        <span className="text-slate-400">–</span>
+        <span className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-center text-[12.5px] font-semibold">
+          {pMax.toLocaleString('vi-VN')}
+        </span>
       </div>
-      <div className="range-slider">
-        <div className="range-slider-track">
-          <div className="range-slider-fill" style={{
-            left: `${(pMin / PRICE_MAX) * 100}%`,
-            width: `${((pMax - pMin) / PRICE_MAX) * 100}%`,
-          }}></div>
-        </div>
-        <input type="range" className="range-min" min={PRICE_MIN} max={PRICE_MAX} step={10000} value={pMin}
-          aria-label="Giá thấp nhất" onChange={(e) => set('gia-tu', Math.min(Number(e.target.value), pMax))} />
-        <input type="range" className="range-max" min={PRICE_MIN} max={PRICE_MAX} step={10000} value={pMax}
-          aria-label="Giá cao nhất" onChange={(e) => set('gia-den', Math.max(Number(e.target.value), pMin))} />
+      <input
+        type="range" min={PRICE_MIN} max={PRICE_MAX} step={10000} value={pMin}
+        aria-label="Giá thấp nhất"
+        onChange={(e) => set('gia-tu', Math.min(Number(e.target.value), pMax))}
+        className="w-full accent-brand-500"
+      />
+      <input
+        type="range" min={PRICE_MIN} max={PRICE_MAX} step={10000} value={pMax}
+        aria-label="Giá cao nhất"
+        onChange={(e) => set('gia-den', Math.max(Number(e.target.value), pMin))}
+        className="w-full accent-brand-500"
+      />
+      <div className="flex justify-between text-[11px] text-slate-400">
+        <span>0</span><span>2.000.000</span>
       </div>
-      <div className="price-slider-labels"><span>0</span><span>2.000.000</span></div>
-    </>
+    </div>
   );
 
-  const catUI = (
-    <>
+  const Check = ({ checked, onChange, label, sub }) => (
+    <label className={`flex cursor-pointer items-start gap-2 rounded-lg px-1.5 py-1.5 transition-colors hover:bg-brand-50 ${sub ? 'pl-6' : ''}`}>
+      <Checkbox checked={checked} onChange={onChange} className="mt-0.5" />
+      <span className="text-[13px] leading-snug text-slate-700">{label}</span>
+    </label>
+  );
+
+  const CatFilter = (
+    <div className="grid gap-0.5">
       {cats.map((c) => (
         <div key={c.id}>
-          <label className="filter-option">
-            <input type="checkbox" checked={String(cat) === String(c.id)} onChange={() => set('danh-muc', String(cat) === String(c.id) ? '' : c.id)} />
-            <span>{c.name}</span>
-          </label>
+          <Check
+            checked={String(cat) === String(c.id)}
+            onChange={() => set('danh-muc', String(cat) === String(c.id) ? '' : c.id)}
+            label={c.name}
+          />
           {(c.children || []).map((s) => (
-            <label key={s.id} className="filter-option sub">
-              <input type="checkbox" checked={String(cat) === String(s.id)} onChange={() => set('danh-muc', String(cat) === String(s.id) ? '' : s.id)} />
-              <span>{s.name}</span>
-            </label>
+            <Check
+              key={s.id}
+              sub
+              checked={String(cat) === String(s.id)}
+              onChange={() => set('danh-muc', String(cat) === String(s.id) ? '' : s.id)}
+              label={s.name}
+            />
           ))}
         </div>
       ))}
-      <div style={{ fontWeight: 700, fontSize: 14, margin: '10px 0 4px' }}>Thương hiệu</div>
+    </div>
+  );
+
+  const BrandFilter = (
+    <div className="grid gap-0.5">
       {brands.map((b) => (
-        <label key={b.id} className="filter-option">
-          <input type="checkbox" checked={String(brand) === String(b.id)} onChange={() => set('thuong-hieu', String(brand) === String(b.id) ? '' : b.id)} />
-          <span>{b.name}</span>
-        </label>
+        <Check
+          key={b.id}
+          checked={String(brand) === String(b.id)}
+          onChange={() => set('thuong-hieu', String(brand) === String(b.id) ? '' : b.id)}
+          label={b.name}
+        />
       ))}
+    </div>
+  );
+
+  const Group = ({ title, open, onToggle, children }) => (
+    <div className="border-b border-line last:border-0">
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between px-4 py-3 text-[13.5px] font-bold text-ink"
+      >
+        {title}
+        <i className={`bi bi-chevron-down text-xs text-slate-400 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
+      </button>
+      {open && <div className="px-4 pb-4">{children}</div>}
+    </div>
+  );
+
+  const Filters = (
+    <>
+      <Group title="Danh mục" open={openGroups.cat} onToggle={() => setOpenGroups((g) => ({ ...g, cat: !g.cat }))}>
+        {CatFilter}
+      </Group>
+      <Group title="Giá (VND)" open={openGroups.price} onToggle={() => setOpenGroups((g) => ({ ...g, price: !g.price }))}>
+        {PriceFilter}
+      </Group>
+      {brands.length > 0 && (
+        <div className="px-4 py-4">
+          <p className="mb-2 text-[13.5px] font-bold text-ink">Thương hiệu</p>
+          {BrandFilter}
+        </div>
+      )}
     </>
   );
 
   return (
     <>
-      <main className="category-page">
-        <div className="breadcrumb-wrap">
-          <nav aria-label="breadcrumb">
-            <ol className="breadcrumb-custom">
-              <li><Link to="/">Trang chủ</Link><span className="sep"><i className="bi bi-chevron-right"></i></span></li>
-              <li><span className="current">{pageTitle}</span></li>
-            </ol>
-          </nav>
+      <Container>
+        <Crumb title={pageTitle} />
+        <div className="pb-4">
+          <h1 className="text-[22px] font-extrabold tracking-tight text-ink sm:text-[26px]">{pageTitle}</h1>
+          <p className="mt-0.5 text-[13px] text-slate-500">{pg.total} sản phẩm</p>
         </div>
 
-        <div className="page-title-wrap">
-          <h1 className="page-title">{pageTitle}</h1>
-          <p className="page-subtitle">{pg.total} sản phẩm</p>
-        </div>
-
-        <div className="category-container">
-          <div className="row g-4 g-lg-4">
-            <aside className="col-lg-4 col-xl-3">
-              <div className="filter-sidebar">
-                <div className="filter-header">
-                  <h3><i className="bi bi-sliders"></i> Bộ Lọc</h3>
-                  <button type="button" className="clear-all" onClick={clearAll}>Xóa tất cả</button>
-                </div>
-                <div className={`filter-group ${openGroups.cat ? 'open' : ''}`}>
-                  <button type="button" className="filter-toggle" onClick={() => toggleGroup('cat')}>Danh Mục <i className="bi bi-chevron-down"></i></button>
-                  <div className="filter-body">{catUI}</div>
-                </div>
-                <div className={`filter-group ${openGroups.price ? 'open' : ''}`}>
-                  <button type="button" className="filter-toggle" onClick={() => toggleGroup('price')}>Giá (VND) <i className="bi bi-chevron-down"></i></button>
-                  <div className="filter-body"><div className="price-slider-wrap">{priceUI}</div></div>
-                </div>
+        <div className="grid gap-5 pb-10 lg:grid-cols-[240px_1fr]">
+          <aside className="hidden lg:block">
+            <div className="sticky top-28 overflow-hidden rounded-xl border border-line bg-white shadow-card">
+              <div className="flex items-center justify-between border-b border-line px-4 py-3">
+                <h2 className="flex items-center gap-2 text-[14px] font-bold text-ink">
+                  <i className="bi bi-sliders text-brand-500" aria-hidden="true" /> Bộ lọc
+                </h2>
+                <button type="button" onClick={clearAll} className="text-[12px] font-semibold text-brand-500 hover:underline">
+                  Xóa tất cả
+                </button>
               </div>
-            </aside>
-
-            <div className="col-lg-8 col-xl-9 category-main">
-              <div className="toolbar-desktop">
-                <div className="results-count">Hiển thị <strong>{rows.length}</strong> trong <strong>{pg.total}</strong> sản phẩm</div>
-                <label className="sort-select-wrap">
-                  <select className="sort-select" value={sort} onChange={(e) => set('sap-xep', e.target.value)}>
-                    {SORTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
-                  </select>
-                  <i className="bi bi-chevron-down"></i>
-                </label>
-              </div>
-
-              <div className="toolbar-mobile">
-                <button type="button" onClick={() => setDrawer(true)}><i className="bi bi-sliders"></i> Bộ Lọc</button>
-                <button type="button" onClick={() => setSortSheet(true)}><i className="bi bi-arrow-down-up"></i> Sắp xếp</button>
-              </div>
-
-              <div className="product-grid">
-                {rows.map((p) => <ProductCardCat key={p.id} p={p} />)}
-              </div>
-              {rows.length === 0 && <p className="text-center text-muted py-4">Không tìm thấy sản phẩm phù hợp.</p>}
-
-              {pg.totalPages > 1 && (
-                <div className="pagination-wrap">
-                  <button disabled={pg.page <= 1} onClick={() => gotoPage(pg.page - 1)}>‹</button>
-                  {Array.from({ length: pg.totalPages }, (_, i) => i + 1).slice(0, 7).map((n) => (
-                    <button key={n} className={n === pg.page ? 'active' : ''} onClick={() => gotoPage(n)}>{n}</button>
-                  ))}
-                  <button disabled={pg.page >= pg.totalPages} onClick={() => gotoPage(pg.page + 1)}>›</button>
-                </div>
-              )}
+              {Filters}
             </div>
+          </aside>
+
+          <div>
+            <div className="mb-3 hidden items-center justify-between gap-3 lg:flex">
+              <p className="text-[13px] text-slate-500">
+                Hiển thị <strong className="text-ink">{rows.length}</strong> trong <strong className="text-ink">{pg.total}</strong> sản phẩm
+              </p>
+              <div className="relative w-48">
+                <Select value={sort} onChange={(e) => set('sap-xep', e.target.value)} aria-label="Sắp xếp">
+                  {SORTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
+                </Select>
+              </div>
+            </div>
+
+            <div className="mb-3 flex gap-2 lg:hidden">
+              <Button variant="outline" size="sm" onClick={() => setDrawer(true)}>
+                <i className="bi bi-sliders" aria-hidden="true" /> Bộ lọc
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setSortSheet(true)}>
+                <i className="bi bi-arrow-down-up" aria-hidden="true" /> Sắp xếp
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+              {rows.map((p) => <ProductCardCat key={p.id} p={p} />)}
+            </div>
+
+            {!rows.length && (
+              <Empty icon="bi-search" title="Không tìm thấy sản phẩm" desc="Thử bỏ bớt bộ lọc hoặc tìm với từ khoá khác." />
+            )}
+
+            <Pager page={pg.page} totalPages={pg.totalPages} onChange={gotoPage} />
           </div>
         </div>
-      </main>
+      </Container>
 
-      <div className={`filter-drawer-overlay ${drawer ? 'active' : ''}`} onClick={() => setDrawer(false)}></div>
-      <aside className={`filter-drawer ${drawer ? 'active' : ''}`}>
-        <div className="filter-drawer-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid #e9ecef', fontWeight: 700 }}>
-          Bộ Lọc
-          <button className="filter-drawer-close" onClick={() => setDrawer(false)}>×</button>
+      <div
+        onClick={() => setDrawer(false)}
+        className={`fixed inset-0 z-40 bg-black/45 transition-opacity lg:hidden ${drawer ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
+        aria-hidden="true"
+      />
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-[300px] max-w-[86vw] flex-col bg-white shadow-pop transition-transform duration-200 lg:hidden ${drawer ? 'translate-x-0' : '-translate-x-full'}`}
+        aria-hidden={!drawer}
+        aria-label="Bộ lọc"
+      >
+        <div className="flex items-center justify-between border-b border-line px-4 py-3">
+          <h2 className="text-[15px] font-bold text-ink">Bộ lọc</h2>
+          <button
+            type="button"
+            onClick={() => setDrawer(false)}
+            aria-label="Đóng bộ lọc"
+            className="grid size-8 place-items-center rounded-lg text-slate-500 hover:bg-slate-100"
+          >
+            <i className="bi bi-x-lg" aria-hidden="true" />
+          </button>
         </div>
-        <div className="filter-drawer-body">
-          <div style={{ fontWeight: 700, margin: '12px 0 4px' }}>Danh Mục</div>
-          {catUI}
-          <div style={{ fontWeight: 700, margin: '12px 0 4px' }}>Giá (VND)</div>
-          {priceUI}
-        </div>
-        <div className="filter-drawer-footer">
-          <button className="btn-reset" onClick={() => { clearAll(); setDrawer(false); }}>Xóa tất cả</button>
-          <button className="btn-apply" onClick={() => setDrawer(false)}>Áp dụng</button>
+        <div className="flex-1 overflow-y-auto">{Filters}</div>
+        <div className="grid grid-cols-2 gap-2 border-t border-line p-3">
+          <Button variant="outline" onClick={() => { clearAll(); setDrawer(false); }}>Xóa tất cả</Button>
+          <Button onClick={() => setDrawer(false)}>Áp dụng</Button>
         </div>
       </aside>
 
-      <div className={`filter-drawer-overlay ${sortSheet ? 'active' : ''}`} onClick={() => setSortSheet(false)}></div>
-      <div className={`sort-drawer ${sortSheet ? 'active' : ''}`}>
-        <div className="sort-drawer-inner">
-          {SORTS.map((s) => (
-            <button key={s.v} className={`sort-option ${sort === s.v ? 'active' : ''}`}
-              onClick={() => { set('sap-xep', s.v); setSortSheet(false); }}>{s.l}</button>
-          ))}
-        </div>
+      <div
+        onClick={() => setSortSheet(false)}
+        className={`fixed inset-0 z-40 bg-black/45 transition-opacity lg:hidden ${sortSheet ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
+        aria-hidden="true"
+      />
+      <div
+        className={`fixed inset-x-0 bottom-0 z-50 rounded-t-2xl bg-white p-3 shadow-pop transition-transform duration-200 lg:hidden ${sortSheet ? 'translate-y-0' : 'translate-y-full'}`}
+        aria-hidden={!sortSheet}
+        role="dialog"
+        aria-label="Sắp xếp"
+      >
+        <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-slate-300" />
+        {SORTS.map((s) => (
+          <button
+            key={s.v}
+            type="button"
+            onClick={() => { set('sap-xep', s.v); setSortSheet(false); }}
+            className={`block w-full rounded-lg px-4 py-3 text-left text-sm transition-colors hover:bg-mist ${sort === s.v ? 'bg-brand-50 font-bold text-brand-600' : 'text-slate-700'}`}
+          >
+            {s.l}
+          </button>
+        ))}
       </div>
     </>
   );

@@ -8,9 +8,11 @@ toast.success = (m) => toast(m, 'ok');
 toast.warning = (m) => toast(m, 'warn');
 toast.error = (m) => toast(m, 'err');
 
-// Toast gọn kiểu mẫu: viên nhộng tối, giữa top, tự ẩn 2.6s
+const DOT = { ok: 'bg-emerald-500', warn: 'bg-accent-500', err: 'bg-red-500' };
+
 export function ToastRoot() {
   const [items, setItems] = useState([]);
+
   useEffect(() => {
     push = (t) => {
       setItems((ls) => [...ls, t]);
@@ -18,21 +20,20 @@ export function ToastRoot() {
     };
     return () => { push = () => {}; };
   }, []);
-  const dot = { ok: '#34A853', warn: '#f59e0b', err: '#ff6b6b' };
+
   return (
-    <div style={{ position: 'fixed', top: 76, left: 0, right: 0, zIndex: 4000, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, pointerEvents: 'none', padding: '0 16px' }}>
+    <div className="pointer-events-none fixed inset-x-0 top-[76px] z-[4000] flex flex-col items-center gap-2 px-4">
       {items.map((t) => (
-        <div key={t.id} style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          background: '#1d1d1f', color: '#fff',
-          borderRadius: 999, padding: '9px 18px', fontSize: 13.5, fontWeight: 600,
-          boxShadow: '0 8px 24px rgba(0,0,0,.25)', maxWidth: 'calc(100vw - 32px)',
-          animation: 'slideDown .2s ease-out',
-        }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: dot[t.type] || dot.ok, flexShrink: 0 }}></span>
+        <div
+          key={t.id}
+          role="status"
+          className="flex max-w-[calc(100vw-32px)] animate-[toastIn_.2s_ease-out] items-center gap-2 rounded-full bg-slate-900 py-2 pr-5 pl-4 text-[13.5px] font-semibold text-white shadow-pop"
+        >
+          <span className={`size-2 shrink-0 rounded-full ${DOT[t.type] || DOT.ok}`} />
           {t.msg}
         </div>
       ))}
+      <style>{`@keyframes toastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}`}</style>
     </div>
   );
 }

@@ -3,6 +3,9 @@ import { api, setAccessToken, setRefreshToken, clearTokens, setOnAuthFail } from
 
 const AuthCtx = createContext(null);
 
+const markSession = () => { try { sessionStorage.setItem('unimate_had_session', '1'); } catch { /* ignore */ } };
+const clearSession = () => { try { sessionStorage.removeItem('unimate_had_session'); } catch { /* ignore */ } };
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [mustChangePassword, setMustChangePassword] = useState(false);
@@ -12,6 +15,7 @@ export function AuthProvider({ children }) {
   const logout = useCallback(async () => {
     try { await api.post('/auth/logout'); } catch { /* ignore */ }
     clearTokens();
+    clearSession();
     setUser(null);
     setMustChangePassword(false);
   }, []);
@@ -36,6 +40,7 @@ export function AuthProvider({ children }) {
     const { data } = await api.post('/auth/login', { identifier, password });
     setAccessToken(data.accessToken);
     if (data.refreshToken) setRefreshToken(data.refreshToken);
+    markSession();
     await mergeGuestCart();
     const me = await api.get('/auth/me');
     setUser(me.data.user);
@@ -52,16 +57,22 @@ export function AuthProvider({ children }) {
     const { data } = await api.post('/auth/register', payload);
     setAccessToken(data.accessToken);
     if (data.refreshToken) setRefreshToken(data.refreshToken);
+    markSession();
     await mergeGuestCart();
     const me = await api.get('/auth/me');
     setUser(me.data.user);
     return me.data.user;
   }, [mergeGuestCart]);
 
+  // Khách chưa từng đăng nhập thì khỏi gọi /auth/refresh — vừa tiết kiệm request,
+  // vừa không dính rate-limit 30 lần/10 phút vì mỗi lần mở trang đều trả 401.
   useEffect(() => {
     if (booted.current) return;
     booted.current = true;
     (async () => {
+      let had = false;
+      try { had = sessionStorage.getItem('unimate_had_session') === '1'; } catch { /* ignore */ }
+      if (!had) { setReady(true); return; }
       try {
         const { data } = await api.post('/auth/refresh', {});
         setAccessToken(data.accessToken);
