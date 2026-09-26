@@ -163,20 +163,29 @@ export default function Checkout() {
                 {payMethods.map((m) => {
                   const meta = PAY_META[m.code] || {};
                   const off = !!meta.soon;
+                  const on = payCode === m.code;
                   return (
                     <label
                       key={m.code}
-                      className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 bg-white p-3 transition-colors ${off ? 'cursor-not-allowed opacity-55' : payCode === m.code ? 'border-brand-500 bg-brand-50' : 'border-line hover:border-slate-300'}`}
+                      className={`flex cursor-pointer items-center gap-3 rounded-xl border bg-white p-3 transition-colors ${
+                        off ? 'cursor-not-allowed border-line/70 opacity-55'
+                          : on ? 'border-brand-300 bg-brand-50/60'
+                            : 'border-line/80 hover:border-slate-300'
+                      }`}
                     >
                       <Checkbox
                         type="radio"
                         name="pay"
-                        checked={payCode === m.code}
+                        checked={on}
                         disabled={off}
                         onChange={() => setPayCode(m.code)}
                       />
-                      <span className={`grid size-10 shrink-0 place-items-center rounded-lg text-[17px] ${payCode === m.code ? 'bg-brand-500 text-white' : 'bg-mist text-slate-500'}`}>
-                        <i className={`bi ${meta.icon || 'bi-wallet2'}`} aria-hidden="true" />
+                      <span className={`flex h-12 w-[120px] shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-white px-2 ${on ? 'border-brand-200' : 'border-line/70'}`}>
+                        {m.logo_url ? (
+                          <img src={m.logo_url} alt="" className="max-h-9 max-w-full object-contain" />
+                        ) : (
+                          <i className={`bi ${meta.icon || 'bi-wallet2'} text-[18px] text-brand-500`} aria-hidden="true" />
+                        )}
                       </span>
                       <span className="min-w-0">
                         <span className="flex flex-wrap items-center gap-1.5 text-[14px] font-semibold text-ink">

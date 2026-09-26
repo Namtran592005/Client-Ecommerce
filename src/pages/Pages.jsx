@@ -177,7 +177,14 @@ export function AboutPage() {
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             {stores.map((s, i) => (
-              <Card key={i}>
+              <Card key={i} className="overflow-hidden">
+                {s.image ? (
+                  <img src={s.image} alt={s.name} loading="lazy" className="h-44 w-full object-cover object-top" />
+                ) : (
+                  <span className="grid h-40 w-full place-items-center bg-gradient-to-br from-brand-600 to-brand-400 text-[28px] font-bold text-white">
+                    {(s.name || '?').trim().charAt(0).toUpperCase()}
+                  </span>
+                )}
                 <CardContent className="p-4">
                   <h3 className="text-[15px] font-bold text-ink">{s.name}</h3>
                   <ul className="mt-2 grid gap-1.5 text-[13.5px] text-slate-600">
